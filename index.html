@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Bank - International Banking System</title>
+    <title>MiniPay Desktop - Global Digital Wallet</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
 <script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
 </head>
 <body>
-    <div class="app-container">
+    <div id="app">
         <!-- Loading Screen -->
         <div id="loadingScreen" class="loading-screen">
             <div class="loading-content">
-                <div class="logo">🌍</div>
-                <h1>Global Bank</h1>
-                <p>International Banking System</p>
-                <div class="loading-spinner"></div>
+                <div class="logo">💰</div>
+                <h1>MiniPay Desktop</h1>
+                <p>Loading your secure wallet...</p>
             </div>
         </div>
 
@@ -25,10 +24,10 @@
             <div class="login-container">
                 <div class="login-card">
                     <div class="logo-section">
-                        <div class="logo">🌍</div>
-                        <h1>Global Bank</h1>
-                        <p class="tagline">International Banking System</p>
-                        <p class="developer">by Olawale Abdul-Ganiyu Adeshina</p>
+                        <div class="logo">💰</div>
+                        <h1>MiniPay Desktop</h1>
+                        <p class="tagline">Global Digital Wallet</p>
+                        <p class="developer">by Olawale Abdul-Ganiyu</p>
                     </div>
                     
                     <form id="loginForm" class="login-form">
@@ -42,10 +41,13 @@
                             <input type="password" id="loginPassword" placeholder="Enter your password" required>
                         </div>
                         
-                        <button type="submit" class="btn btn-primary">Login</button>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="btn-text">Login</span>
+                            <span class="btn-loading">Logging in...</span>
+                        </button>
                         
                         <div class="form-footer">
-                            <p>Don't have an account? <a href="#" id="showRegister">Open Account</a></p>
+                            <p>Don't have an account? <a href="#" id="showRegister">Register</a></p>
                             <p><a href="#" id="showAdminLogin">Admin Login</a></p>
                         </div>
                     </form>
@@ -58,9 +60,9 @@
             <div class="register-container">
                 <div class="register-card">
                     <div class="logo-section">
-                        <div class="logo">🌍</div>
-                        <h1>Open Account</h1>
-                        <p class="tagline">Join Global Bank International</p>
+                        <div class="logo">💰</div>
+                        <h1>Create Account</h1>
+                        <p class="tagline">Join MiniPay Desktop</p>
                     </div>
                     
                     <form id="registerForm" class="register-form">
@@ -80,19 +82,6 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="regCountry">Country</label>
-                            <select id="regCountry" required>
-                                <option value="">Select your country</option>
-                                <option value="US">United States</option>
-                                <option value="UK">United Kingdom</option>
-                                <option value="CH">Switzerland</option>
-                                <option value="SG">Singapore</option>
-                                <option value="NG">Nigeria</option>
-                                <option value="OTHER">Other</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
                             <label for="regPassword">Password</label>
                             <input type="password" id="regPassword" placeholder="Create a password" required>
                         </div>
@@ -102,7 +91,10 @@
                             <input type="password" id="regConfirmPassword" placeholder="Confirm your password" required>
                         </div>
                         
-                        <button type="submit" class="btn btn-primary">Create Account</button>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="btn-text">Create Account</span>
+                            <span class="btn-loading">Creating...</span>
+                        </button>
                         
                         <div class="form-footer">
                             <p>Already have an account? <a href="#" id="showLogin">Login</a></p>
@@ -119,7 +111,7 @@
                     <div class="logo-section">
                         <div class="logo">🔐</div>
                         <h1>Admin Dashboard</h1>
-                        <p class="tagline">Global Bank Administration</p>
+                        <p class="tagline">MiniPay Administration</p>
                     </div>
                     
                     <form id="adminLoginForm" class="admin-login-form">
@@ -133,7 +125,10 @@
                             <input type="password" id="adminPassword" placeholder="Enter admin password" required>
                         </div>
                         
-                        <button type="submit" class="btn btn-admin">Admin Login</button>
+                        <button type="submit" class="btn btn-admin">
+                            <span class="btn-text">Admin Login</span>
+                            <span class="btn-loading">Authenticating...</span>
+                        </button>
                         
                         <div class="form-footer">
                             <p><a href="#" id="showCustomerLogin">Customer Login</a></p>
@@ -143,93 +138,86 @@
             </div>
         </div>
 
-        <!-- Customer Dashboard Page -->
-        <div id="customerDashboardPage" class="page hidden">
-            <nav class="navbar">
-                <div class="nav-brand">
-                    <span class="logo">🌍</span>
-                    <span>Global Bank</span>
-                </div>
-                <div class="nav-user">
-                    <span id="customerUserName">Welcome</span>
-                    <button id="customerLogoutBtn" class="btn btn-sm">Logout</button>
-                </div>
-            </nav>
-
+        <!-- Dashboard Page -->
+        <div id="dashboardPage" class="page hidden">
             <div class="dashboard-layout">
-                <!-- Sidebar Navigation -->
+                <!-- Sidebar -->
                 <aside class="sidebar">
-                    <div class="sidebar-nav">
+                    <div class="sidebar-header">
+                        <div class="logo">💰</div>
+                        <div class="app-name">MiniPay</div>
+                    </div>
+                    
+                    <nav class="sidebar-nav">
                         <a href="#" class="nav-item active" data-section="overview">
                             <span class="nav-icon">📊</span>
                             <span>Overview</span>
                         </a>
-                        <a href="#" class="nav-item" data-section="banking">
-                            <span class="nav-icon">🏦</span>
-                            <span>Banking</span>
+                        <a href="#" class="nav-item" data-section="transactions">
+                            <span class="nav-icon">💳</span>
+                            <span>Transactions</span>
                         </a>
-                        <a href="#" class="nav-item" data-section="crypto">
-                            <span class="nav-icon">💎</span>
-                            <span>Crypto Wallet</span>
-                        </a>
-                        <a href="#" class="nav-item" data-section="mining">
-                            <span class="nav-icon">⛏️</span>
-                            <span>Mining</span>
-                        </a>
-                        <a href="#" class="nav-item" data-section="exchange">
-                            <span class="nav-icon">💱</span>
-                            <span>Exchange</span>
-                        </a>
-                        <a href="#" class="nav-item" data-section="transfers">
+                        <a href="#" class="nav-item" data-section="send">
                             <span class="nav-icon">📤</span>
-                            <span>Transfers</span>
+                            <span>Send Money</span>
                         </a>
-                        <a href="#" class="nav-item" data-section="kyc">
-                            <span class="nav-icon">📄</span>
-                            <span>KYC Verification</span>
+                        <a href="#" class="nav-item" data-section="receive">
+                            <span class="nav-icon">📥</span>
+                            <span>Receive Money</span>
                         </a>
-                        <a href="#" class="nav-item" data-section="documents">
-                            <span class="nav-icon">📋</span>
-                            <span>Banking Documents</span>
+                        <a href="#" class="nav-item" data-section="settings">
+                            <span class="nav-icon">⚙️</span>
+                            <span>Settings</span>
                         </a>
-                        <a href="#" class="nav-item" data-section="support">
-                            <span class="nav-icon">💬</span>
-                            <span>Support</span>
-                        </a>
+                    </nav>
+                    
+                    <div class="sidebar-footer">
+                        <div class="user-info">
+                            <div class="user-avatar">👤</div>
+                            <div class="user-details">
+                                <div class="user-name" id="sidebarUserName">User</div>
+                                <div class="user-email" id="sidebarUserEmail">user@example.com</div>
+                            </div>
+                        </div>
+                        <button id="logoutBtn" class="btn-logout">
+                            <span>🚪</span> Logout
+                        </button>
                     </div>
                 </aside>
 
-                <!-- Main Content Area -->
+                <!-- Main Content -->
                 <main class="main-content">
+                    <header class="main-header">
+                        <div class="header-title">
+                            <h1>Dashboard</h1>
+                            <p>Welcome back!</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="icon-btn" id="refreshBtn" title="Refresh">
+                                <span>🔄</span>
+                            </button>
+                            <button class="icon-btn" id="newTransactionBtn" title="New Transaction">
+                                <span>➕</span>
+                            </button>
+                        </div>
+                    </header>
+
                     <!-- Overview Section -->
                     <section id="overviewSection" class="content-section active">
-                        <div class="section-header">
-                            <h1>Dashboard Overview</h1>
-                            <p>Welcome to Global Bank International</p>
-                        </div>
-
                         <div class="stats-grid">
                             <div class="stat-card">
                                 <div class="stat-icon">💰</div>
                                 <div class="stat-content">
-                                    <h3>Bank Balance</h3>
-                                    <p class="stat-value" id="totalBankBalance">$0.00</p>
+                                    <h3>Total Balance</h3>
+                                    <p class="stat-value" id="totalBalance">$0.00</p>
                                 </div>
                             </div>
                             
                             <div class="stat-card">
-                                <div class="stat-icon">💎</div>
-                                <div class="stat-content">
-                                    <h3>Crypto Balance</h3>
-                                    <p class="stat-value" id="totalCryptoBalance">0.00000000 BTC</p>
-                                </div>
-                            </div>
-                            
-                            <div class="stat-card">
-                                <div class="stat-icon">🏦</div>
+                                <div class="stat-icon">💳</div>
                                 <div class="stat-content">
                                     <h3>Account Number</h3>
-                                    <p class="stat-value" id="customerAccountNumber">-</p>
+                                    <p class="stat-value" id="accountNumber">-</p>
                                 </div>
                             </div>
                             
@@ -240,600 +228,147 @@
                                     <p class="stat-value" id="totalTransactions">0</p>
                                 </div>
                             </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon">📈</div>
+                                <div class="stat-content">
+                                    <h3>Account Status</h3>
+                                    <p class="stat-value status-active">Active</p>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="quick-actions">
                             <h2>Quick Actions</h2>
                             <div class="action-grid">
-                                <button class="action-card" id="quickAddFunds">
-                                    <span class="action-icon">💳</span>
-                                    <span>Add Funds</span>
+                                <button class="action-card" id="quickAddCredit">
+                                    <span class="action-icon">➕</span>
+                                    <span>Add Credit</span>
+                                </button>
+                                <button class="action-card" id="quickAddDebit">
+                                    <span class="action-icon">➖</span>
+                                    <span>Add Debit</span>
+                                </button>
+                                <button class="action-card" id="quickEditBalance">
+                                    <span class="action-icon">✏️</span>
+                                    <span>Edit Balance</span>
                                 </button>
                                 <button class="action-card" id="quickSendMoney">
                                     <span class="action-icon">📤</span>
                                     <span>Send Money</span>
                                 </button>
-                                <button class="action-card" id="quickExchange">
-                                    <span class="action-icon">💱</span>
-                                    <span>Exchange</span>
+                                <button class="action-card" id="quickReceiveMoney">
+                                    <span class="action-icon">📥</span>
+                                    <span>Receive Money</span>
                                 </button>
-                                <button class="action-card" id="quickMining">
-                                    <span class="action-icon">⛏️</span>
-                                    <span>Mining</span>
-                                </button>
-                                <button class="action-card" id="quickCrypto">
-                                    <span class="action-icon">💎</span>
-                                    <span>Crypto Wallet</span>
-                                </button>
-                                <button class="action-card" id="quickKYC">
-                                    <span class="action-icon">📄</span>
-                                    <span>KYC</span>
+                                <button class="action-card" id="quickViewHistory">
+                                    <span class="action-icon">📊</span>
+                                    <span>View History</span>
                                 </button>
                             </div>
                         </div>
 
                         <div class="recent-transactions">
                             <h2>Recent Transactions</h2>
-                            <div id="recentTransactionsList" class="transactions-list">
+                            <div id="transactionsList" class="transactions-list">
                                 <p class="no-data">No transactions yet</p>
                             </div>
                         </div>
                     </section>
 
-                    <!-- Banking Section -->
-                    <section id="bankingSection" class="content-section">
+                    <!-- Transactions Section -->
+                    <section id="transactionsSection" class="content-section">
                         <div class="section-header">
-                            <h1>Banking Services</h1>
-                            <p>International Banking Operations</p>
+                            <h2>Transaction History</h2>
+                            <button class="btn btn-primary" id="exportTransactionsBtn">
+                                <span>📥</span> Export
+                            </button>
                         </div>
-
-                        <div class="banking-services">
-                            <div class="service-card">
-                                <h3>SWIFT Transfers</h3>
-                                <p>Send money globally using SWIFT network</p>
-                                <button class="btn btn-primary" id="swiftTransferBtn">Initiate Transfer</button>
-                            </div>
-
-                            <div class="service-card">
-                                <h3>Swiss Banking</h3>
-                                <p>Premium Swiss banking services</p>
-                                <button class="btn btn-primary" id="swissBankingBtn">Access Services</button>
-                            </div>
-
-                            <div class="service-card">
-                                <h3>Commercial Banking</h3>
-                                <p>Business and corporate banking</p>
-                                <button class="btn btn-primary" id="commercialBankingBtn">View Services</button>
-                            </div>
-
-                            <div class="service-card">
-                                <h3>Microfinance</h3>
-                                <p>Micro loans and financial services</p>
-                                <button class="btn btn-primary" id="microfinanceBtn">Apply Now</button>
-                            </div>
+                        <div class="transactions-table-container">
+                            <table class="transactions-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allTransactionsTableBody">
+                                </tbody>
+                            </table>
                         </div>
+                    </section>
 
-                        <div class="payment-methods-section">
-                            <h2>Payment Methods</h2>
-                            <div class="payment-methods-grid">
-                                <div class="payment-method">
-                                    <span class="payment-icon">💳</span>
-                                    <span>MasterCard</span>
+                    <!-- Send Money Section -->
+                    <section id="sendSection" class="content-section">
+                        <h2>Send Money</h2>
+                        <form id="sendMoneyForm" class="money-form">
+                            <div class="form-group">
+                                <label for="recipientAccount">Recipient Account Number</label>
+                                <input type="text" id="recipientAccount" placeholder="Enter account number" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sendAmount">Amount ($)</label>
+                                <input type="number" id="sendAmount" placeholder="Enter amount" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sendDescription">Description (Optional)</label>
+                                <input type="text" id="sendDescription" placeholder="Enter description">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Send Money</button>
+                        </form>
+                    </section>
+
+                    <!-- Receive Money Section -->
+                    <section id="receiveSection" class="content-section">
+                        <h2>Receive Money</h2>
+                        <div class="receive-info">
+                            <div class="info-card">
+                                <h3>Your Account Number</h3>
+                                <div class="account-display">
+                                    <input type="text" id="receiveAccountNumber" readonly>
+                                    <button class="btn btn-sm" id="copyAccountNumber">Copy</button>
                                 </div>
-                                <div class="payment-method">
-                                    <span class="payment-icon">💳</span>
-                                    <span>Visa</span>
-                                </div>
-                                <div class="payment-method">
-                                    <span class="payment-icon">💳</span>
-                                    <span>Versa</span>
-                                </div>
-                                <div class="payment-method">
-                                    <span class="payment-icon">🎁</span>
-                                    <span>Gift Cards</span>
-                                </div>
-                                <div class="payment-method">
-                                    <span class="payment-icon">🅿️</span>
-                                    <span>PayPal</span>
-                                </div>
-                                <div class="payment-method">
-                                    <span class="payment-icon">💵</span>
-                                    <span>Payeer</span>
-                                </div>
-                                <div class="payment-method">
-                                    <span class="payment-icon">🌍</span>
-                                    <span>Western Union</span>
-                                </div>
-                                <div class="payment-method">
-                                    <span class="payment-icon">💰</span>
-                                    <span>Skrill</span>
-                                </div>
-                                <div class="payment-method">
-                                    <span class="payment-icon">🔵</span>
-                                    <span>Coinbase</span>
-                                </div>
-                                <div class="payment-method">
-                                    <span class="payment-icon">⛓️</span>
-                                    <span>Blockchain</span>
-                                </div>
+                            </div>
+                            <div class="info-card">
+                                <h3>Your Name</h3>
+                                <input type="text" id="receiveAccountName" readonly>
                             </div>
                         </div>
                     </section>
 
-                    <!-- Crypto Wallet Section -->
-                    <section id="cryptoSection" class="content-section">
-                        <div class="section-header">
-                            <h1>Crypto Wallet</h1>
-                            <p>Manage your cryptocurrency portfolio</p>
-                        </div>
-
-                        <div class="crypto-balance-display">
-                            <div class="crypto-total">
-                                <h3>Total Crypto Balance</h3>
-                                <p class="crypto-value" id="cryptoTotalBalance">0.00000000 BTC</p>
-                            </div>
-                        </div>
-
-                        <div class="crypto-wallets-grid">
-                            <!-- BTC Wallet -->
-                            <div class="crypto-wallet-card">
-                                <div class="wallet-header">
-                                    <span class="coin-icon">₿</span>
-                                    <span class="coin-name">Bitcoin (BTC)</span>
-                                </div>
-                                <div class="wallet-balance">
-                                    <p class="balance-amount" id="btcBalance">0.00000000</p>
-                                    <p class="balance-value">BTC</p>
-                                </div>
-                                <div class="wallet-address">
-                                    <label>Wallet Address</label>
-                                    <div class="address-display">
-                                        <input type="text" id="btcAddress" readonly value="bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh">
-                                        <button class="btn btn-sm copy-btn" data-wallet="btc">Copy</button>
-                                    </div>
-                                </div>
-                                <div class="wallet-actions">
-                                    <button class="btn btn-primary send-crypto-btn" data-coin="BTC">Send</button>
-                                    <button class="btn btn-secondary receive-crypto-btn" data-coin="BTC">Receive</button>
+                    <!-- Settings Section -->
+                    <section id="settingsSection" class="content-section">
+                        <h2>Settings</h2>
+                        <div class="settings-grid">
+                            <div class="setting-card">
+                                <h3>Account Information</h3>
+                                <div class="setting-info">
+                                    <p><strong>Full Name:</strong> <span id="settingsFullName">-</span></p>
+                                    <p><strong>Email:</strong> <span id="settingsEmail">-</span></p>
+                                    <p><strong>Phone:</strong> <span id="settingsPhone">-</span></p>
+                                    <p><strong>Account Number:</strong> <span id="settingsAccountNumber">-</span></p>
                                 </div>
                             </div>
-
-                            <!-- ETH Wallet -->
-                            <div class="crypto-wallet-card">
-                                <div class="wallet-header">
-                                    <span class="coin-icon">Ξ</span>
-                                    <span class="coin-name">Ethereum (ETH)</span>
-                                </div>
-                                <div class="wallet-balance">
-                                    <p class="balance-amount" id="ethBalance">0.00000000</p>
-                                    <p class="balance-value">ETH</p>
-                                </div>
-                                <div class="wallet-address">
-                                    <label>Wallet Address</label>
-                                    <div class="address-display">
-                                        <input type="text" id="ethAddress" readonly value="0x71C7656EC7ab88b098defB751B7401B5f6d8976F">
-                                        <button class="btn btn-sm copy-btn" data-wallet="eth">Copy</button>
-                                    </div>
-                                </div>
-                                <div class="wallet-actions">
-                                    <button class="btn btn-primary send-crypto-btn" data-coin="ETH">Send</button>
-                                    <button class="btn btn-secondary receive-crypto-btn" data-coin="ETH">Receive</button>
+                            
+                            <div class="setting-card">
+                                <h3>System Information</h3>
+                                <div class="setting-info">
+                                    <p><strong>App Version:</strong> <span id="settingsAppVersion">-</span></p>
+                                    <p><strong>Owner:</strong> <span id="settingsOwner">-</span></p>
+                                    <p><strong>Google Account:</strong> <span id="settingsGoogleAccount">-</span></p>
+                                    <p><strong>API Base URL:</strong> <span id="settingsApiUrl">-</span></p>
                                 </div>
                             </div>
-
-                            <!-- USDT Wallet -->
-                            <div class="crypto-wallet-card">
-                                <div class="wallet-header">
-                                    <span class="coin-icon">₮</span>
-                                    <span class="coin-name">Tether (USDT)</span>
+                            
+                            <div class="setting-card">
+                                <h3>Data Management</h3>
+                                <div class="setting-actions">
+                                    <button class="btn btn-secondary" id="exportDataBtn">Export Data</button>
+                                    <button class="btn btn-secondary" id="importDataBtn">Import Data</button>
                                 </div>
-                                <div class="wallet-balance">
-                                    <p class="balance-amount" id="usdtBalance">0.00000000</p>
-                                    <p class="balance-value">USDT</p>
-                                </div>
-                                <div class="wallet-address">
-                                    <label>Wallet Address</label>
-                                    <div class="address-display">
-                                        <input type="text" id="usdtAddress" readonly value="TXLa24j8jQ5qE5qE5qE5qE5qE5qE5qE5qE5qE">
-                                        <button class="btn btn-sm copy-btn" data-wallet="usdt">Copy</button>
-                                    </div>
-                                </div>
-                                <div class="wallet-actions">
-                                    <button class="btn btn-primary send-crypto-btn" data-coin="USDT">Send</button>
-                                    <button class="btn btn-secondary receive-crypto-btn" data-coin="USDT">Receive</button>
-                                </div>
-                            </div>
-
-                            <!-- Add More Coins -->
-                            <div class="crypto-wallet-card add-wallet-card">
-                                <div class="add-wallet-content">
-                                    <span class="add-icon">➕</span>
-                                    <h3>Add Wallet</h3>
-                                    <p>Support for 50+ cryptocurrencies</p>
-                                    <button class="btn btn-primary" id="addCryptoWalletBtn">Add New Wallet</button>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- Mining Section -->
-                    <section id="miningSection" class="content-section">
-                        <div class="section-header">
-                            <h1>Crypto Mining</h1>
-                            <p>Mine cryptocurrency automatically</p>
-                        </div>
-
-                        <div class="mining-dashboard">
-                            <div class="mining-status-card">
-                                <div class="mining-header">
-                                    <h3>Mining Status</h3>
-                                    <div class="mining-toggle">
-                                        <label class="switch">
-                                            <input type="checkbox" id="miningToggle">
-                                            <span class="slider"></span>
-                                        </label>
-                                        <span id="miningStatusText">OFF</span>
-                                    </div>
-                                </div>
-                                <div class="mining-stats">
-                                    <div class="mining-stat">
-                                        <p>Mining Rate</p>
-                                        <p class="stat-value">0.5 coins / 5 seconds</p>
-                                    </div>
-                                    <div class="mining-stat">
-                                        <p>Total Mined</p>
-                                        <p class="stat-value" id="totalMined">0.00000000</p>
-                                    </div>
-                                    <div class="mining-stat">
-                                        <p>Mining Time</p>
-                                        <p class="stat-value" id="miningTime">00:00:00</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mining-operations">
-                                <h2>Mining Operations</h2>
-                                <div id="miningOperationsList" class="mining-list">
-                                    <p class="no-data">No mining operations yet</p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- Exchange Section -->
-                    <section id="exchangeSection" class="content-section">
-                        <div class="section-header">
-                            <h1>Currency & Crypto Exchange</h1>
-                            <p>Exchange currencies and cryptocurrencies</p>
-                        </div>
-
-                        <div class="exchange-container">
-                            <div class="exchange-form">
-                                <div class="exchange-input-group">
-                                    <label>From</label>
-                                    <div class="input-row">
-                                        <input type="number" id="exchangeFromAmount" placeholder="0.00" step="0.00000001">
-                                        <select id="exchangeFromCurrency">
-                                            <option value="USD">USD</option>
-                                            <option value="EUR">EUR</option>
-                                            <option value="GBP">GBP</option>
-                                            <option value="BTC">BTC</option>
-                                            <option value="ETH">ETH</option>
-                                            <option value="USDT">USDT</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="exchange-icon">
-                                    <span>⬇️</span>
-                                </div>
-
-                                <div class="exchange-input-group">
-                                    <label>To</label>
-                                    <div class="input-row">
-                                        <input type="number" id="exchangeToAmount" placeholder="0.00" step="0.00000001" readonly>
-                                        <select id="exchangeToCurrency">
-                                            <option value="BTC">BTC</option>
-                                            <option value="ETH">ETH</option>
-                                            <option value="USDT">USDT</option>
-                                            <option value="USD">USD</option>
-                                            <option value="EUR">EUR</option>
-                                            <option value="GBP">GBP</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="exchange-rate-info">
-                                    <p>Exchange Rate: <span id="exchangeRateDisplay">1 USD = 0.000015 BTC</span></p>
-                                </div>
-
-                                <button class="btn btn-primary" id="exchangeBtn">Exchange Now</button>
-                            </div>
-
-                            <div class="exchange-history">
-                                <h2>Exchange History</h2>
-                                <div id="exchangeHistoryList" class="exchange-list">
-                                    <p class="no-data">No exchange history</p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- Transfers Section -->
-                    <section id="transfersSection" class="content-section">
-                        <div class="section-header">
-                            <h1>Transfers</h1>
-                            <p>Send money and cryptocurrency</p>
-                        </div>
-
-                        <div class="transfer-tabs">
-                            <button class="tab-btn active" data-tab="bank-transfer">Bank Transfer</button>
-                            <button class="tab-btn" data-tab="crypto-transfer">Crypto Transfer</button>
-                            <button class="tab-btn" data-tab="wallet-transfer">Wallet Transfer</button>
-                        </div>
-
-                        <!-- Bank Transfer Form -->
-                        <div id="bank-transfer" class="transfer-form active">
-                            <form id="bankTransferForm">
-                                <div class="form-group">
-                                    <label for="recipientBank">Recipient Bank</label>
-                                    <select id="recipientBank" required>
-                                        <option value="">Select Bank</option>
-                                        <option value="swift">SWIFT Bank</option>
-                                        <option value="swiss">Swiss Bank</option>
-                                        <option value="commercial">Commercial Bank</option>
-                                        <option value="microfinance">Microfinance Bank</option>
-                                        <option value="other">Other Bank</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="recipientAccount">Recipient Account Number</label>
-                                    <input type="text" id="recipientAccount" placeholder="Enter account number" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="recipientSwift">SWIFT Code (if applicable)</label>
-                                    <input type="text" id="recipientSwift" placeholder="Enter SWIFT code">
-                                </div>
-                                <div class="form-group">
-                                    <label for="recipientEmail">Recipient Email</label>
-                                    <input type="email" id="recipientEmail" placeholder="Enter recipient email">
-                                </div>
-                                <div class="form-group">
-                                    <label for="transferAmount">Amount ($)</label>
-                                    <input type="number" id="transferAmount" placeholder="Enter amount" step="0.01" min="0" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="transferDescription">Description</label>
-                                    <textarea id="transferDescription" placeholder="Enter transfer description"></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Send Transfer</button>
-                            </form>
-                        </div>
-
-                        <!-- Crypto Transfer Form -->
-                        <div id="crypto-transfer" class="transfer-form">
-                            <form id="cryptoTransferForm">
-                                <div class="form-group">
-                                    <label for="cryptoCoinType">Cryptocurrency</label>
-                                    <select id="cryptoCoinType" required>
-                                        <option value="BTC">Bitcoin (BTC)</option>
-                                        <option value="ETH">Ethereum (ETH)</option>
-                                        <option value="USDT">Tether (USDT)</option>
-                                        <option value="LTC">Litecoin (LTC)</option>
-                                        <option value="BCH">Bitcoin Cash (BCH)</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="recipientWalletAddress">Recipient Wallet Address</label>
-                                    <input type="text" id="recipientWalletAddress" placeholder="Enter wallet address" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="cryptoTransferAmount">Amount</label>
-                                    <input type="number" id="cryptoTransferAmount" placeholder="Enter amount" step="0.00000001" min="0" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Send Crypto</button>
-                            </form>
-                        </div>
-
-                        <!-- Wallet Transfer Form -->
-                        <div id="wallet-transfer" class="transfer-form">
-                            <form id="walletTransferForm">
-                                <div class="form-group">
-                                    <label for="walletRecipientEmail">Recipient Email</label>
-                                    <input type="email" id="walletRecipientEmail" placeholder="Enter recipient email" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="walletTransferAmount">Amount ($)</label>
-                                    <input type="number" id="walletTransferAmount" placeholder="Enter amount" step="0.01" min="0" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Send to Wallet</button>
-                            </form>
-                        </div>
-                    </section>
-
-                    <!-- KYC Section -->
-                    <section id="kycSection" class="content-section">
-                        <div class="section-header">
-                            <h1>KYC Verification</h1>
-                            <p>Complete your verification to unlock all features</p>
-                        </div>
-
-                        <div class="kyc-status-card">
-                            <div class="kyc-status-header">
-                                <h3>Verification Status</h3>
-                                <span class="status-badge" id="kycStatusBadge">Pending</span>
-                            </div>
-                            <div class="kyc-status-details">
-                                <p><strong>Status:</strong> <span id="kycStatus">Not Submitted</span></p>
-                                <p><strong>Submitted Date:</strong> <span id="kycSubmittedDate">-</span></p>
-                                <p><strong>Verified Date:</strong> <span id="kycVerifiedDate">-</span></p>
-                            </div>
-                        </div>
-
-                        <div class="kyc-form-container">
-                            <h2>Personal Information</h2>
-                            <form id="kycForm" class="kyc-form">
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="kycFullName">Full Name</label>
-                                        <input type="text" id="kycFullName" placeholder="Enter full name as on ID" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="kycDateOfBirth">Date of Birth</label>
-                                        <input type="date" id="kycDateOfBirth" required>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="kycAddress">Home Address</label>
-                                    <input type="text" id="kycAddress" placeholder="Enter your home address" required>
-                                </div>
-
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="kycCity">City</label>
-                                        <input type="text" id="kycCity" placeholder="Enter city" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="kycCountry">Country</label>
-                                        <select id="kycCountry" required>
-                                            <option value="">Select country</option>
-                                            <option value="US">United States</option>
-                                            <option value="UK">United Kingdom</option>
-                                            <option value="CH">Switzerland</option>
-                                            <option value="SG">Singapore</option>
-                                            <option value="NG">Nigeria</option>
-                                            <option value="OTHER">Other</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="kycPhoneNumber">Phone Number</label>
-                                    <input type="tel" id="kycPhoneNumber" placeholder="Enter phone number" required>
-                                </div>
-
-                                <h2>Document Upload</h2>
-                                <div class="form-group">
-                                    <label for="kycPassport">Passport Photo *</label>
-                                    <input type="file" id="kycPassport" accept="image/*" required>
-                                    <small>Upload a clear photo of your passport</small>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="kycIdCard">ID Card (Optional)</label>
-                                    <input type="file" id="kycIdCard" accept="image/*">
-                                    <small>National ID, Driver's License, or other government-issued ID</small>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>
-                                        <input type="checkbox" id="kycAgreement" required>
-                                        I certify that all information provided is accurate and complete
-                                    </label>
-                                </div>
-
-                                <button type="submit" class="btn btn-primary">Submit KYC Documents</button>
-                            </form>
-                        </div>
-                    </section>
-
-                    <!-- Banking Documents Section -->
-                    <section id="documentsSection" class="content-section">
-                        <div class="section-header">
-                            <h1>Banking Documents</h1>
-                            <p>View official banking licenses and permits</p>
-                        </div>
-
-                        <div class="documents-grid">
-                            <div class="document-card">
-                                <div class="document-icon">📜</div>
-                                <h3>Trademark Approval</h3>
-                                <p>Official trademark registration certificate</p>
-                                <button class="btn btn-primary view-doc-btn" data-doc="trademark">View Document</button>
-                            </div>
-
-                            <div class="document-card">
-                                <div class="document-icon">⚖️</div>
-                                <h3>Financial Law Permit</h3>
-                                <p>International financial operating license</p>
-                                <button class="btn btn-primary view-doc-btn" data-doc="financial-law">View Document</button>
-                            </div>
-
-                            <div class="document-card">
-                                <div class="document-icon">🌍</div>
-                                <h3>World Bank Permit</h3>
-                                <p>International banking authorization</p>
-                                <button class="btn btn-primary view-doc-btn" data-doc="world-bank">View Document</button>
-                            </div>
-
-                            <div class="document-card">
-                                <div class="document-icon">🏛️</div>
-                                <h3>Banking License</h3>
-                                <p>Full banking operations license</p>
-                                <button class="btn btn-primary view-doc-btn" data-doc="banking-license">View Document</button>
-                            </div>
-
-                            <div class="document-card">
-                                <div class="document-icon">📋</div>
-                                <h3>Business Registration</h3>
-                                <p>Official business registration certificate</p>
-                                <button class="btn btn-primary view-doc-btn" data-doc="business-registration">View Document</button>
-                            </div>
-
-                            <div class="document-card">
-                                <div class="document-icon">✍️</div>
-                                <h3>Business Agreement</h3>
-                                <p>Terms and conditions agreement</p>
-                                <button class="btn btn-primary view-doc-btn" data-doc="business-agreement">View Document</button>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- Support Section -->
-                    <section id="supportSection" class="content-section">
-                        <div class="section-header">
-                            <h1>Customer Support</h1>
-                            <p>Get help from our support team</p>
-                        </div>
-
-                        <div class="support-options">
-                            <div class="support-card">
-                                <div class="support-icon">📧</div>
-                                <h3>Email Support</h3>
-                                <p>olawalztegan@gmail.com</p>
-                                <button class="btn btn-primary">Send Email</button>
-                            </div>
-
-                            <div class="support-card">
-                                <div class="support-icon">💬</div>
-                                <h3>Live Chat</h3>
-                                <p>24/7 live chat support</p>
-                                <button class="btn btn-primary">Start Chat</button>
-                            </div>
-
-                            <div class="support-card">
-                                <div class="support-icon">📞</div>
-                                <h3>Phone Support</h3>
-                                <p>+1 (555) 123-4567</p>
-                                <button class="btn btn-primary">Call Now</button>
-                            </div>
-
-                            <div class="support-card">
-                                <div class="support-icon">📚</div>
-                                <h3>FAQ</h3>
-                                <p>Frequently asked questions</p>
-                                <button class="btn btn-primary">View FAQ</button>
-                            </div>
-                        </div>
-
-                        <div class="google-support-section">
-                            <h2>Google Support Integration</h2>
-                            <p>Our platform is integrated with Google support services</p>
-                            <div class="google-support-info">
-                                <p><strong>Google Account:</strong> olawalztegan@gmail.com</p>
-                                <p><strong>Support Type:</strong> Business Banking Support</p>
-                                <p><strong>Response Time:</strong> Within 24 hours</p>
                             </div>
                         </div>
                     </section>
@@ -843,139 +378,184 @@
 
         <!-- Admin Dashboard Page -->
         <div id="adminDashboardPage" class="page hidden">
-            <nav class="navbar admin-nav">
-                <div class="nav-brand">
-                    <span class="logo">🌍</span>
-                    <span>Global Bank Admin</span>
-                </div>
-                <div class="nav-user">
-                    <span>Administrator</span>
-                    <button id="adminLogoutBtn" class="btn btn-sm">Logout</button>
-                </div>
-            </nav>
-
-            <div class="admin-dashboard-layout">
-                <div class="admin-content">
-                    <div class="admin-header">
-                        <h1>Administration Dashboard</h1>
-                        <p>System Management & Control</p>
+            <div class="dashboard-layout">
+                <!-- Admin Sidebar -->
+                <aside class="sidebar admin-sidebar">
+                    <div class="sidebar-header">
+                        <div class="logo">🔐</div>
+                        <div class="app-name">MiniPay Admin</div>
                     </div>
-
-                    <div class="admin-stats-grid">
-                        <div class="stat-card admin-stat">
-                            <div class="stat-icon">👥</div>
-                            <div class="stat-content">
-                                <h3>Total Users</h3>
-                                <p class="stat-value" id="adminTotalUsers">0</p>
+                    
+                    <nav class="sidebar-nav">
+                        <a href="#" class="nav-item active" data-section="admin-overview">
+                            <span class="nav-icon">📊</span>
+                            <span>Overview</span>
+                        </a>
+                        <a href="#" class="nav-item" data-section="admin-users">
+                            <span class="nav-icon">👥</span>
+                            <span>Manage Users</span>
+                        </a>
+                        <a href="#" class="nav-item" data-section="admin-transactions">
+                            <span class="nav-icon">💳</span>
+                            <span>All Transactions</span>
+                        </a>
+                        <a href="#" class="nav-item" data-section="admin-system">
+                            <span class="nav-icon">⚙️</span>
+                            <span>System Settings</span>
+                        </a>
+                    </nav>
+                    
+                    <div class="sidebar-footer">
+                        <div class="user-info">
+                            <div class="user-avatar">👑</div>
+                            <div class="user-details">
+                                <div class="user-name">Admin</div>
+                                <div class="user-email">olawalztegan@gmail.com</div>
                             </div>
                         </div>
-                        
-                        <div class="stat-card admin-stat">
-                            <div class="stat-icon">💰</div>
-                            <div class="stat-content">
-                                <h3>Total Bank Volume</h3>
-                                <p class="stat-value" id="adminTotalBankVolume">$0.00</p>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card admin-stat">
-                            <div class="stat-icon">💎</div>
-                            <div class="stat-content">
-                                <h3>Total Crypto Volume</h3>
-                                <p class="stat-value" id="adminTotalCryptoVolume">0.00000000 BTC</p>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card admin-stat">
-                            <div class="stat-icon">📊</div>
-                            <div class="stat-content">
-                                <h3>Total Transactions</h3>
-                                <p class="stat-value" id="adminTotalTransactions">0</p>
-                            </div>
-                        </div>
+                        <button id="adminLogoutBtn" class="btn-logout">
+                            <span>🚪</span> Logout
+                        </button>
                     </div>
+                </aside>
 
-                    <div class="admin-actions-grid">
-                        <div class="admin-action-card">
-                            <h3>👥 User Management</h3>
-                            <p>Manage all customer accounts</p>
-                            <button class="btn btn-primary" id="manageUsersBtn">Manage Users</button>
+                <!-- Admin Main Content -->
+                <main class="main-content">
+                    <header class="main-header">
+                        <div class="header-title">
+                            <h1>Admin Dashboard</h1>
+                            <p>System Administration</p>
                         </div>
+                    </header>
 
-                        <div class="admin-action-card">
-                            <h3>💳 Transaction Management</h3>
-                            <p>View and manage all transactions</p>
-                            <button class="btn btn-primary" id="manageTransactionsBtn">View Transactions</button>
-                        </div>
-
-                        <div class="admin-action-card">
-                            <h3>💎 Crypto Management</h3>
-                            <p>Manage crypto wallets and operations</p>
-                            <button class="btn btn-primary" id="manageCryptoBtn">Manage Crypto</button>
-                        </div>
-
-                        <div class="admin-action-card">
-                            <h3>⛏️ Mining Control</h3>
-                            <p>Control mining operations globally</p>
-                            <button class="btn btn-primary" id="controlMiningBtn">Control Mining</button>
-                        </div>
-
-                        <div class="admin-action-card">
-                            <h3>💱 Exchange Rates</h3>
-                            <p>Set and manage exchange rates</p>
-                            <button class="btn btn-primary" id="manageExchangeRatesBtn">Manage Rates</button>
-                        </div>
-
-                        <div class="admin-action-card">
-                            <h3>📄 KYC Verification</h3>
-                            <p>Review and approve KYC documents</p>
-                            <button class="btn btn-primary" id="reviewKYCBtn">Review KYC</button>
-                        </div>
-
-                        <div class="admin-action-card">
-                            <h3>🏦 Banking Settings</h3>
-                            <p>Configure banking operations</p>
-                            <button class="btn btn-primary" id="bankingSettingsBtn">Banking Settings</button>
-                        </div>
-
-                        <div class="admin-action-card">
-                            <h3>📊 System Reports</h3>
-                                <p>Generate financial reports</p>
-                                <button class="btn btn-primary" id="generateReportsBtn">Generate Reports</button>
+                    <!-- Admin Overview Section -->
+                    <section id="admin-overview" class="content-section active">
+                        <div class="admin-stats-grid">
+                            <div class="stat-card admin-stat">
+                                <div class="stat-icon">👥</div>
+                                <div class="stat-content">
+                                    <h3>Total Users</h3>
+                                    <p class="stat-value" id="adminTotalUsers">0</p>
+                                </div>
                             </div>
-                    </div>
-                </div>
+                            
+                            <div class="stat-card admin-stat">
+                                <div class="stat-icon">💳</div>
+                                <div class="stat-content">
+                                    <h3>Total Transactions</h3>
+                                    <p class="stat-value" id="adminTotalTransactions">0</p>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card admin-stat">
+                                <div class="stat-icon">💰</div>
+                                <div class="stat-content">
+                                    <h3>Total Volume</h3>
+                                    <p class="stat-value" id="adminTotalVolume">$0.00</p>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card admin-stat">
+                                <div class="stat-icon">📈</div>
+                                <div class="stat-content">
+                                    <h3>Active Today</h3>
+                                    <p class="stat-value" id="adminActiveToday">0</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="recent-users-section">
+                            <h2>Recent Users</h2>
+                            <div id="recentUsersList" class="users-list">
+                                <p class="no-data">No users yet</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Admin Users Section -->
+                    <section id="admin-users" class="content-section">
+                        <h2>Manage Users</h2>
+                        <div class="users-table-container">
+                            <table class="users-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Account #</th>
+                                        <th>Balance</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allUsersTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Admin Transactions Section -->
+                    <section id="admin-transactions" class="content-section">
+                        <h2>All Transactions</h2>
+                        <div class="transactions-table-container">
+                            <table class="transactions-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>User</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allTransactionsAdminTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Admin System Settings Section -->
+                    <section id="admin-system" class="content-section">
+                        <h2>System Settings</h2>
+                        <div class="system-settings-grid">
+                            <div class="setting-card">
+                                <h3>System Configuration</h3>
+                                <div class="setting-info">
+                                    <p><strong>Owner:</strong> <span id="adminSettingsOwner">-</span></p>
+                                    <p><strong>Google Account:</strong> <span id="adminSettingsGoogleAccount">-</span></p>
+                                    <p><strong>API Version:</strong> <span id="adminSettingsApiVersion">-</span></p>
+                                    <p><strong>API Base URL:</strong> <span id="adminSettingsApiUrl">-</span></p>
+                                    <p><strong>Total Volume:</strong> <span id="adminSettingsTotalVolume">-</span></p>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-card">
+                                <h3>System Actions</h3>
+                                <div class="setting-actions">
+                                    <button class="btn btn-primary" id="adminExportDataBtn">Export All Data</button>
+                                    <button class="btn btn-secondary" id="adminImportDataBtn">Import Data</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
             </div>
         </div>
     </div>
 
-    <!-- Document Viewer Modal -->
-    <div id="documentModal" class="modal-overlay hidden">
-        <div class="modal-content document-modal">
-            <div class="modal-header">
-                <h3 id="documentModalTitle">Document</h3>
-                <button class="close-modal" id="closeDocumentModal">&times;</button>
-            </div>
-            <div class="modal-body" id="documentModalBody">
-                <!-- Document content will be loaded here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- General Modal -->
-    <div id="generalModal" class="modal-overlay hidden">
+    <!-- Modal Container -->
+    <div id="modalContainer" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="generalModalTitle">Modal</h3>
-                <button class="close-modal" id="closeGeneralModal">&times;</button>
+                <h3 id="modalTitle">Modal Title</h3>
+                <button class="close-modal" id="closeModal">&times;</button>
             </div>
-            <div class="modal-body" id="generalModalBody">
+            <div class="modal-body" id="modalBody">
                 <!-- Dynamic content -->
             </div>
         </div>
     </div>
 
-    <script src="database.js"></script>
-    <script src="app.js"></script>
+    <script src="renderer.js"></script>
 </body>
 </html>

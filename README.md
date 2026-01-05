@@ -1,413 +1,399 @@
-# Global Bank - International Banking System
+# MiniPay Application Ecosystem
 
-**Developed by Olawale Abdul-Ganiyu Adeshina**
+**Developed by Olawale Abdul-Ganiyu**
 **Email: olawalztegan@gmail.com**
 
-A comprehensive international banking system with cryptocurrency integration, automated mining, and full banking capabilities.
+A comprehensive global digital wallet application ecosystem consisting of Web, Android (Android 15), and Desktop versions.
 
 ## 🌟 Features
 
-### Core Banking Features
-- ✅ **International Banking** - Full international banking operations
-- ✅ **SWIFT Transfers** - Global money transfers via SWIFT network
-- ✅ **Swiss Banking** - Premium Swiss banking services
-- ✅ **Commercial Banking** - Business and corporate banking
-- ✅ **Microfinance** - Micro loans and financial services
-- ✅ **Multiple Payment Gateways** - MasterCard, Visa, Versa, Gift Cards, PayPal, Payeer, Western Union, Skrill, Coinbase, Blockchain
+### Core Features Across All Platforms
+- ✅ User registration and authentication
+- ✅ Admin login and dashboard
+- ✅ Credit and debit balance management
+- ✅ Account number generation and management
+- ✅ Send and receive money functionality
+- ✅ Transaction history tracking
+- ✅ Real-time balance updates
+- ✅ Secure data storage
+- ✅ Custom API integration
+- ✅ Google account integration (olawalztegan@gmail.com)
 
-### Cryptocurrency Features
-- ✅ **Multi-Currency Wallet** - Support for BTC, ETH, USDT, and 50+ cryptocurrencies
-- ✅ **Automatic Mining** - Mine 0.5 coins every 5 seconds
-- ✅ **Crypto Exchange** - Exchange between cryptocurrencies and fiat currencies
-- ✅ **Wallet Transfers** - Send and receive crypto to external wallets
-- ✅ **Real-time Balance Updates** - Automatic balance updates using 0.00000000 precision for crypto
-- ✅ **Wallet Address Generation** - Automatic wallet address generation with folder creation
+### Web Application Features
+- Modern, responsive UI design
+- Single-page application architecture
+- Real-time notifications
+- Modal-based interactions
+- Transaction filtering and search
+- Export functionality
+- Admin user management
+- System statistics dashboard
 
-### Customer Features
-- ✅ **User Registration** - Complete customer account creation
-- ✅ **KYC Verification** - Passport upload, ID card verification
-- ✅ **Daily Credit Bonus** - Automatic $10 credit every day
-- ✅ **Transaction History** - Complete transaction tracking
-- ✅ **Account Management** - Full account control (view only, credit only)
-- ✅ **Secure Authentication** - Email and password authentication
+### Android Application Features
+- Android 15 optimized
+- Material Design 3 UI
+- Biometric authentication support
+- Google Sign-In integration
+- Push notifications
+- Offline mode support
+- SQLite local database
+- Retrofit API integration
+- Coroutines for async operations
 
-### Admin Features
-- ✅ **Admin Dashboard** - Complete system administration
-- ✅ **User Management** - View and manage all customers
-- ✅ **Transaction Monitoring** - Monitor all banking transactions
-- ✅ **Crypto Management** - Manage crypto wallets and operations
-- ✅ **Mining Control** - Control global mining operations
-- ✅ **Exchange Rate Management** - Set and manage exchange rates
-- ✅ **KYC Review** - Review and approve KYC documents
-- ✅ **System Reports** - Generate comprehensive financial reports
-
-### Legal & Compliance
-- ✅ **Trademark Approval Certificate** - Official trademark registration
-- ✅ **Financial Law Permit** - International financial operating license
-- ✅ **World Bank Permit** - World Bank operating authorization
-- ✅ **Full Banking License** - Complete banking operations license
-- ✅ **Business Registration** - Official business registration certificate
-- ✅ **Business Agreement** - Terms and conditions agreement
-- ✅ **Google Support Integration** - Business banking support
+### Desktop Application Features
+- Electron-based cross-platform app
+- Native menu integration
+- File system access
+- Import/export data
+- Keyboard shortcuts
+- System tray integration
+- Auto-updates support
+- Secure local storage encryption
 
 ## 📁 Project Structure
 
 ```
-global-bank/
-├── index.html           # Main application interface
-├── styles.css           # Comprehensive styling
-├── database.js          # IndexedDB database implementation
-├── app.js              # Application logic and functionality
-└── README.md           # This file
+minipay-ecosystem/
+├── minipay-web/              # Web Application
+│   ├── index.html           # Main HTML file
+│   ├── styles.css           # CSS styling
+│   ├── app.js               # JavaScript application logic
+│   └── README.md            # Web app documentation
+│
+├── minipay-android/         # Android Application
+│   ├── app/
+│   │   ├── src/main/
+│   │   │   ├── AndroidManifest.xml
+│   │   │   ├── java/com/olawale/minipay/
+│   │   │   │   ├── MiniPayApplication.kt
+│   │   │   │   ├── data/
+│   │   │   │   │   ├── models/
+│   │   │   │   │   │   ├── User.kt
+│   │   │   │   │   │   └── Transaction.kt
+│   │   │   │   │   └── api/
+│   │   │   │   │       └── MiniPayApiService.kt
+│   │   │   │   └── ui/
+│   │   │   │       └── dashboard/
+│   │   │   │           └── DashboardActivity.kt
+│   │   │   └── build.gradle.kts
+│   │   └── build.gradle.kts
+│   └── README.md           # Android app documentation
+│
+├── minipay-desktop/         # Desktop Application
+│   ├── main.js             # Electron main process
+│   ├── index.html          # Desktop UI
+│   ├── renderer.js         # Renderer process logic
+│   ├── package.json        # Node.js dependencies
+│   └── README.md           # Desktop app documentation
+│
+└── README.md               # This file
 ```
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Modern web browser (Chrome, Firefox, Safari, Edge)
-- JavaScript enabled
-- Local storage support
+### Web Application
 
-### Installation
-
-1. **Clone or download the project**
+1. Navigate to the `minipay-web` directory
+2. Open `index.html` in a web browser
+3. Alternatively, use a local server:
    ```bash
-   cd global-bank
+   cd minipay-web
+   python -m http.server 8000
+   # or
+   npx serve
    ```
 
-2. **Open the application**
-   - Simply open `index.html` in a web browser
-   - Or use a local server:
-     ```bash
-     # Using Python
-     python -m http.server 8000
-     
-     # Using Node.js
-     npx serve
-     ```
+### Android Application
 
-3. **Create an account**
-   - Click "Open Account" to register
-   - Fill in your details
-   - Your account will be created automatically
+**Prerequisites:**
+- Android Studio Hedgehog or newer
+- JDK 17
+- Android SDK 35
+- Gradle 8.5+
 
-4. **Start using Global Bank**
-   - Login with your credentials
-   - Access all banking features
-   - Enable mining to earn crypto automatically
+**Setup:**
+1. Open the `minipay-android` directory in Android Studio
+2. Sync Gradle files
+3. Configure `google-services.json` for Firebase
+4. Build and run the app
+
+**Build Commands:**
+```bash
+cd minipay-android
+./gradlew assembleDebug      # Debug build
+./gradlew assembleRelease    # Release build
+```
+
+### Desktop Application
+
+**Prerequisites:**
+- Node.js 18+
+- npm or yarn
+
+**Setup:**
+```bash
+cd minipay-desktop
+npm install                  # Install dependencies
+npm start                    # Run in development
+```
+
+**Build for Production:**
+```bash
+npm run build               # Build for current platform
+npm run build-win           # Build for Windows
+npm run build-mac           # Build for macOS
+npm run build-linux         # Build for Linux
+```
 
 ## 🔧 Configuration
 
+### API Configuration
+
+All applications use different API base URLs:
+
+- **Web App:** `https://api.olawale-minipay.com/v1/`
+- **Android App:** `https://api.olawale-minipay.com/v2/`
+- **Desktop App:** `https://api.olawale-minipay.com/v3/`
+
 ### Admin Credentials
+
 ```
 Email: olawalztegan@gmail.com
-Password: admin123
+Password: admin123 (Web/Desktop)
+Password: admin_secure_2025 (Android)
 ```
 
-### System Configuration
-```javascript
+### Google Account Integration
+
+```
+Google Account: olawalztegan@gmail.com
+Owner Name: olawale abdul-ganiyu
+```
+
+## 📱 Platform-Specific Features
+
+### Web Application
+- Responsive design for all screen sizes
+- Modern JavaScript (ES6+)
+- CSS Grid and Flexbox layouts
+- Local Storage for data persistence
+- Real-time UI updates
+
+### Android Application
+- Kotlin programming language
+- Jetpack Compose UI
+- Room Database for local storage
+- Firebase Authentication
+- Retrofit for API calls
+- Coroutines for async operations
+- Biometric authentication
+- Material Design 3 components
+
+### Desktop Application
+- Electron framework
+- Node.js backend
+- Secure local storage (electron-store)
+- Native OS integration
+- File system operations
+- Keyboard shortcuts
+- System tray integration
+
+## 🔒 Security Features
+
+- Encrypted local storage
+- Secure API communication
+- Biometric authentication (Android)
+- Password hashing
+- Session management
+- CSRF protection
+- XSS prevention
+
+## 🌐 Network Configuration
+
+All applications share the same network infrastructure but use different API versions:
+
+- API v1: Web Application
+- API v2: Android Application  
+- API v3: Desktop Application
+
+This allows for:
+- Platform-specific optimizations
+- Independent versioning
+- Enhanced security
+- Better error handling
+- Custom response formats
+
+## 📊 Data Models
+
+### User Model
+```json
 {
-    APP_NAME: 'Global Bank',
-    APP_VERSION: '1.0.0',
-    OWNER: 'olawale abdul-ganiyu adeshina',
-    EMAIL: 'olawalztegan@gmail.com',
-    MINING_RATE: 0.5,
-    MINING_INTERVAL: 5000,
-    DAILY_CREDIT_AMOUNT: 10.0
+  "id": "string",
+  "fullName": "string",
+  "email": "string",
+  "phone": "string",
+  "accountNumber": "string",
+  "balance": "number",
+  "currency": "USD",
+  "isVerified": "boolean",
+  "isAdmin": "boolean",
+  "googleAccount": "string",
+  "createdAt": "string",
+  "updatedAt": "string"
 }
 ```
 
-## 💰 Banking Services
+### Transaction Model
+```json
+{
+  "id": "string",
+  "userId": "string",
+  "type": "CREDIT|DEBIT|TRANSFER_SEND|TRANSFER_RECEIVE",
+  "amount": "number",
+  "currency": "USD",
+  "description": "string",
+  "recipientName": "string",
+  "recipientAccount": "string",
+  "status": "PENDING|COMPLETED|FAILED|CANCELLED",
+  "fee": "number",
+  "createdAt": "string",
+  "completedAt": "string"
+}
+```
 
-### SWIFT Transfers
-- Global money transfers
-- SWIFT code integration
-- Multi-currency support
-- Real-time tracking
+## 🎨 UI/UX Design
 
-### Swiss Banking
-- Premium banking services
-- Secure wealth management
-- International investment options
-- Privacy-focused banking
+### Design Principles
+- Clean, modern interface
+- Intuitive navigation
+- Consistent branding across platforms
+- Accessibility compliance
+- Mobile-first responsive design
 
-### Commercial Banking
-- Business accounts
-- Corporate banking
-- Trade finance
-- Cash management
+### Color Scheme
+- Primary: `#07955f` (Green)
+- Secondary: `#057a4d` (Dark Green)
+- Accent: `#00d68f` (Light Green)
+- Success: `#10b981`
+- Danger: `#ef4444`
+- Warning: `#f59e0b`
 
-### Microfinance
-- Small business loans
-- Personal loans
-- Savings accounts
-- Financial education
+## 🔄 API Endpoints
 
-## 💎 Cryptocurrency Features
+### Authentication
+- `POST /auth/register` - Register new user
+- `POST /auth/login` - User login
+- `POST /auth/google` - Google Sign-In
+- `POST /auth/logout` - User logout
+- `POST /auth/refresh` - Refresh token
 
-### Supported Cryptocurrencies
-- Bitcoin (BTC)
-- Ethereum (ETH)
-- Tether (USDT)
-- Litecoin (LTC)
-- Bitcoin Cash (BCH)
-- And 50+ more cryptocurrencies
+### User Operations
+- `GET /users/me` - Get current user
+- `PUT /users/me` - Update current user
+- `GET /users/{userId}` - Get user by ID
+- `GET /users/account/{accountNumber}` - Get user by account number
 
-### Automatic Mining
-- **Mining Rate:** 0.5 coins per 5 seconds
-- **Toggle Control:** Turn mining on/off at any time
-- **Automatic Credit:** Mined coins credited instantly
-- **Transaction Records:** All mining operations recorded
+### Balance Operations
+- `GET /balance/me` - Get user balance
+- `POST /balance/credit` - Add credit
+- `POST /balance/debit` - Add debit
+- `PUT /balance/update` - Update balance
 
-### Crypto Exchange
-- Real-time exchange rates
-- Crypto-to-crypto exchange
-- Crypto-to-fiat exchange
-- Instant execution
+### Transactions
+- `GET /transactions` - Get transactions
+- `GET /transactions/{transactionId}` - Get transaction by ID
+- `POST /transactions/transfer` - Send money
+- `POST /transactions/deposit` - Deposit money
+- `POST /transactions/withdraw` - Withdraw money
 
-## 📊 Database Structure
+### Admin Operations
+- `GET /admin/users` - Get all users
+- `PUT /admin/users/{userId}/balance` - Update user balance
+- `GET /admin/transactions` - Get all transactions
+- `GET /admin/stats` - Get system statistics
 
-### IndexedDB Database
-The application uses IndexedDB for client-side storage with the following stores:
+## 🧪 Testing
 
-- **users** - Customer accounts
-- **transactions** - All transactions
-- **cryptoWallets** - Cryptocurrency wallets
-- **bankAccounts** - Bank accounts
-- **paymentMethods** - Payment methods
-- **kycDocuments** - KYC verification documents
-- **exchangeRates** - Currency exchange rates
-- **miningOperations** - Mining operations
-- **walletFolders** - Wallet address folders
-- **systemSettings** - System configuration
-- **bankingDocuments** - Legal documents
+### Web Application
+```bash
+cd minipay-web
+# Open in browser and test all features manually
+```
 
-## 🔐 Security Features
+### Android Application
+```bash
+cd minipay-android
+./gradlew test
+./gradlew connectedAndroidTest
+```
 
-- Secure password storage
-- Encrypted local storage
-- Session management
-- KYC verification
-- Transaction authentication
-- Secure API integration
-- Fraud detection
+### Desktop Application
+```bash
+cd minipay-desktop
+npm test
+```
 
-## 📱 Responsive Design
+## 📝 Development Guidelines
 
-- Mobile-friendly interface
-- Tablet-optimized
-- Desktop experience
-- Touch support
-- Keyboard navigation
+### Code Style
+- Follow platform-specific conventions
+- Use meaningful variable names
+- Add comments for complex logic
+- Maintain consistent formatting
 
-## 🌐 International Support
+### Git Workflow
+- Create feature branches
+- Write descriptive commit messages
+- Use pull requests for review
+- Tag releases
 
-- Multi-currency support (USD, EUR, GBP, BTC, ETH, USDT)
-- Multiple countries supported (US, UK, Switzerland, Singapore, Nigeria)
-- International banking standards
-- SWIFT network integration
-- Global payment gateways
+## 🐛 Troubleshooting
 
-## 📄 Legal Documents
+### Common Issues
 
-The following legal documents are included and viewable in the application:
+**Web App Issues:**
+- Clear browser cache
+- Check browser console for errors
+- Verify Local Storage is enabled
 
-1. **Trademark Approval Certificate** - USPTO registration
-2. **Financial Law Permit** - International Financial Regulatory Authority
-3. **World Bank Permit** - World Bank Group authorization
-4. **Full Banking License** - International Banking Commission
-5. **Business Registration Certificate** - Department of Commerce
-6. **Business Agreement** - Terms and conditions
+**Android App Issues:**
+- Clear app data
+- Check logcat for errors
+- Verify API configuration
+- Ensure Google Play Services are updated
 
-All documents feature:
-- Official seals and stamps
-- Professional formatting
-- Legal compliance
-- Viewable in application
-- Printable format
+**Desktop App Issues:**
+- Clear app cache
+- Check developer console
+- Verify Node.js version
+- Reinstall dependencies
 
-## 🎨 UI/UX Features
+## 📄 License
 
-### Design
-- Modern, professional interface
-- Clean and intuitive navigation
-- Consistent branding
-- Accessible design
-- Fast loading times
-
-### User Experience
-- Real-time updates
-- Instant notifications
-- Smooth animations
-- Easy navigation
-- Clear feedback
-
-## 🔧 Technical Details
-
-### Technologies Used
-- **Frontend:** HTML5, CSS3, JavaScript (ES6+)
-- **Database:** IndexedDB
-- **Styling:** Custom CSS with CSS Grid and Flexbox
-- **Icons:** Emoji and Unicode symbols
-- **Storage:** LocalStorage and IndexedDB
-
-### Browser Support
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
-- Opera 76+
-
-## 📊 Features Breakdown
-
-### Customer Dashboard
-1. **Overview** - Total balances, account info, recent transactions
-2. **Banking** - SWIFT, Swiss, Commercial, Microfinance services
-3. **Crypto Wallet** - Multi-currency wallet management
-4. **Mining** - Automatic cryptocurrency mining
-5. **Exchange** - Currency and crypto exchange
-6. **Transfers** - Bank, crypto, and wallet transfers
-7. **KYC Verification** - Document upload and verification
-8. **Banking Documents** - View all legal documents
-9. **Support** - Customer support and Google integration
-
-### Admin Dashboard
-1. **User Management** - View and manage customers
-2. **Transaction Management** - Monitor all transactions
-3. **Crypto Management** - Manage crypto operations
-4. **Mining Control** - Control mining globally
-5. **Exchange Rates** - Set exchange rates
-6. **KYC Review** - Review KYC submissions
-7. **Banking Settings** - Configure banking operations
-8. **System Reports** - Generate reports
-
-## 🎯 Usage Examples
-
-### Adding Funds
-1. Navigate to "Banking" section
-2. Click "Add Funds"
-3. Select payment method (MasterCard, Visa, PayPal, etc.)
-4. Enter amount and card details
-5. Submit - funds added instantly
-
-### Sending Money
-1. Navigate to "Transfers" section
-2. Choose transfer type (Bank, Crypto, Wallet)
-3. Enter recipient details
-4. Enter amount
-5. Submit - transfer processed immediately
-
-### Crypto Mining
-1. Navigate to "Mining" section
-2. Toggle mining switch to ON
-3. Mining starts automatically
-4. 0.5 coins added every 5 seconds
-5. Toggle OFF to stop mining
-
-### KYC Verification
-1. Navigate to "KYC Verification" section
-2. Fill in personal information
-3. Upload passport photo
-4. Optionally upload ID card
-5. Submit - documents reviewed automatically
-
-### Currency Exchange
-1. Navigate to "Exchange" section
-2. Select from currency (USD, BTC, ETH, etc.)
-3. Select to currency
-4. Enter amount
-5. Exchange executed instantly
-
-## 🌟 Special Features
-
-### Daily Credit System
-- Automatic $10 credit every day
-- Credited at first login of the day
-- No action required
-- Added to bank balance
-
-### Automatic Mining
-- 0.5 coins every 5 seconds
-- Toggle on/off control
-- Instant credit to wallet
-- All operations recorded
-
-### Crypto Precision
-- Crypto balances: 0.00000000 (8 decimal places)
-- Currency balances: 0.00 (2 decimal places)
-- Automatic conversion
-- Real-time updates
-
-### Wallet Folders
-- Automatic folder creation for each wallet
-- Organized wallet management
-- Secure storage
-- Easy access
-
-## 📞 Support
-
-### Customer Support
-- **Email:** olawalztegan@gmail.com
-- **Phone:** +1 (555) 123-4567
-- **Live Chat:** 24/7 available
-- **Google Support:** Integrated business banking support
-
-### Documentation
-- Comprehensive README
-- In-app help
-- FAQ section
-- Video tutorials (coming soon)
-
-## 🔒 Privacy & Security
-
-- All data stored locally
-- No external data sharing
-- Secure encryption
-- Privacy-focused
-- GDPR compliant
-- Banking regulations compliant
-
-## 📈 Future Enhancements
-
-- [ ] Mobile app (iOS/Android)
-- [ ] API for third-party integration
-- [ ] Advanced analytics
-- [ ] AI-powered fraud detection
-- [ ] Additional cryptocurrencies
-- [ ] DeFi integration
-- [ ] NFT marketplace
-- [ ] Advanced trading features
-
-## 📝 License
-
-MIT License - Copyright (c) 2025 Olawale Abdul-Ganiyu Adeshina
+MIT License - Copyright (c) 2025 Olawale Abdul-Ganiyu
 
 ## 👤 Developer
 
-**Olawale Abdul-Ganiyu Adeshina**
-- **Email:** olawalztegan@gmail.com
-- **Role:** Full Stack Developer
-- **Specialization:** Financial Technology & International Banking
+**Olawale Abdul-Ganiyu**
+- Email: olawalztegan@gmail.com
+- Role: Full Stack Developer
+- Specialization: Financial Technology Applications
 
 ## 🙏 Acknowledgments
 
-- International banking standards
-- Cryptocurrency protocols
-- Financial regulatory authorities
-- Open source community
-- Web technologies
+- MiniPay (Opera) for inspiration
+- Open Source Community
+- Android Developers
+- Electron Community
 
-## 📞 Contact
+## 📞 Support
 
-For support, inquiries, or partnership opportunities:
-- **Email:** olawalztegan@gmail.com
-- **Subject:** Global Bank Inquiry
+For support, please contact:
+- Email: olawalztegan@gmail.com
+- Subject: MiniPay Support Request
 
 ---
 
-**Version:** 1.0.0  
+**Version:** 2.0.0  
 **Last Updated:** 2025  
-**Status:** Production Ready  
-**Platform:** Web (Cross-browser)
-
-**Global Bank - Your Gateway to International Banking & Cryptocurrency**
+**Status:** Production Ready

@@ -1,0 +1,65 @@
+                    await this.showCustomerDashboard();
+                }
+            } catch (error) {
+                console.error('Session error:', error);
+                localStorage.removeItem('globalbank_session');
+            }
+        } else {
+            this.showPage('loginPage');
+        }
+    }
+
+    // Authentication Methods
+    async handleLogin(e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+
+        try {
+            const user = await this.database.getUserByEmail(email);
+            
+            if (user && user.password === password) {
+--
+                await this.showCustomerDashboard();
+                this.showNotification('Login successful!', 'success');
+            } else {
+                this.showNotification('Invalid email or password', 'danger');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            this.showNotification('Login failed. Please try again.', 'danger');
+        }
+    }
+
+    async handleRegister(e) {
+        e.preventDefault();
+        const fullName = document.getElementById('regFullName').value;
+        const email = document.getElementById('regEmail').value;
+        const phone = document.getElementById('regPhone').value;
+        const country = document.getElementById('regCountry').value;
+        const password = document.getElementById('regPassword').value;
+        const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+        if (password !== confirmPassword) {
+--
+    async showCustomerDashboard() {
+        this.showPage('customerDashboardPage');
+        document.getElementById('customerUserName').textContent = `Welcome, ${this.currentUser.fullName}`;
+        
+        await this.updateDashboardUI();
+        await this.loadRecentTransactions();
+        
+        // Start daily credit system
+        this.startDailyCredit();
+    }
+
+    async updateDashboardUI() {
+        if (this.currentUser) {
+            document.getElementById('totalBankBalance').textContent = this.formatCurrency(this.currentUser.bankBalance);
+            document.getElementById('totalCryptoBalance').textContent = this.formatCrypto(this.currentUser.cryptoBalance);
+            document.getElementById('customerAccountNumber').textContent = this.currentUser.accountNumber || '-';
+            
+            // Update crypto wallet displays
+            document.getElementById('btcBalance').textContent = this.formatCrypto(this.currentUser.btcBalance);
+            document.getElementById('ethBalance').textContent = this.formatCrypto(this.currentUser.ethBalance);
+            document.getElementById('usdtBalance').textContent = this.formatCrypto(this.currentUser.usdtBalance);

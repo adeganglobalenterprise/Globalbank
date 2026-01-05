@@ -1,0 +1,100 @@
+// Global Bank - International Banking System
+// Developed by Olawale Abdul-Ganiyu Adeshina
+// Email: olawalztegan@gmail.com
+
+class GlobalBank {
+    constructor() {
+        this.currentUser = null;
+        this.isAdmin = false;
+        this.database = null;
+        this.miningInterval = null;
+        this.dailyCreditInterval = null;
+        this.miningActive = false;
+        
+        // Configuration
+        this.CONFIG = {
+            APP_NAME: 'Global Bank',
+            APP_VERSION: '1.0.0',
+            OWNER: 'olawale abdul-ganiyu adeshina',
+            EMAIL: 'olawalztegan@gmail.com',
+            API_BASE_URL: 'https://api.globalbank-international.com/v1/',
+            MINING_RATE: 0.5,
+            MINING_INTERVAL: 5000,
+            DAILY_CREDIT_AMOUNT: 10.0,
+            SWIFT_CODES: {
+                US: 'GBIBUSNY',
+                UK: 'GBIBUKLD',
+                CH: 'GBIBCHZH',
+                SG: 'GBIBSGSG',
+                NG: 'GBIBNGLA'
+            }
+        };
+        
+        this.init();
+    }
+
+    async init() {
+        console.log(`${this.CONFIG.APP_NAME} initializing...`);
+        
+        try {
+            // Initialize database
+            this.database = await new GlobalBankDatabase();
+            console.log('Database initialized successfully');
+            
+            // Attach event listeners
+            this.attachEventListeners();
+            
+            // Initialize exchange rates
+            await this.initializeExchangeRates();
+            
+            // Check for existing session
+            await this.checkExistingSession();
+            
+            // Initialize banking documents
+            await this.initializeBankingDocuments();
+            
+            console.log(`${this.CONFIG.APP_NAME} initialized successfully`);
+            
+        } catch (error) {
+            console.error('Initialization error:', error);
+            this.showNotification('Error initializing application. Please refresh.', 'danger');
+        }
+    }
+
+    attachEventListeners() {
+        // Page Navigation
+        document.getElementById('showRegister').addEventListener('click', (e) => {
+            e.preventDefault();
+            this.showPage('registerPage');
+        });
+
+        document.getElementById('showLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            this.showPage('loginPage');
+        });
+
+        document.getElementById('showAdminLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            this.showPage('adminLoginPage');
+        });
+
+        document.getElementById('showCustomerLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            this.showPage('loginPage');
+        });
+
+        // Forms
+        document.getElementById('loginForm').addEventListener('submit', (e) => this.handleLogin(e));
+        document.getElementById('registerForm').addEventListener('submit', (e) => this.handleRegister(e));
+        document.getElementById('adminLoginForm').addEventListener('submit', (e) => this.handleAdminLogin(e));
+
+        // Dashboard Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = item.dataset.section;
+                if (section) {
+                    this.navigateToSection(section);
+                }
+            });
+        });

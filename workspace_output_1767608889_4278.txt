@@ -1,0 +1,6 @@
+}
+
+// Initialize the application
+const app = new GlobalBank();
+
+// Add animation styles

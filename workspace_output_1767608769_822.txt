@@ -1,0 +1,21 @@
+    async showAdminDashboard() {
+        this.showPage('adminDashboardPage');
+        
+        // Load admin statistics
+        await this.loadAdminStatistics();
+    }
+
+    async loadAdminStatistics() {
+        try {
+            const users = await this.database.getAllUsers();
+            const transactions = await this.database.getAllTransactions();
+            
+            let totalBankVolume = 0;
+            let totalCryptoVolume = 0;
+            
+            users.forEach(user => {
+                totalBankVolume += user.bankBalance || 0;
+                totalCryptoVolume += user.cryptoBalance || 0;
+            });
+            
+            document.getElementById('adminTotalUsers').textContent = users.length;

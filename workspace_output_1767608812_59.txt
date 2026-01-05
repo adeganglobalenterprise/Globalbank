@@ -1,0 +1,8 @@
+        try {
+            // Initialize database
+            this.database = await new GlobalBankDatabase();
+            console.log('Database initialized successfully');
+            
+            // Attach event listeners
+            this.attachEventListeners();
+            

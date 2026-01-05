@@ -1,0 +1,31 @@
+                // Exchange Rates Store
+                if (!db.objectStoreNames.contains('exchangeRates')) {
+                    const exchangeStore = db.createObjectStore('exchangeRates', { keyPath: 'pair' });
+                    exchangeStore.createIndex('from', 'from', { unique: false });
+                    exchangeStore.createIndex('to', 'to', { unique: false });
+                    exchangeStore.createIndex('updatedAt', 'updatedAt', { unique: false });
+                }
+
+                // Mining Operations Store
+                if (!db.objectStoreNames.contains('miningOperations')) {
+                    const miningStore = db.createObjectStore('miningOperations', { keyPath: 'id' });
+                    miningStore.createIndex('userId', 'userId', { unique: false });
+                    miningStore.createIndex('status', 'status', { unique: false });
+                    miningStore.createIndex('createdAt', 'createdAt', { unique: false });
+                }
+
+                // Wallet Folders Store
+                if (!db.objectStoreNames.contains('walletFolders')) {
+                    const folderStore = db.createObjectStore('walletFolders', { keyPath: 'folderPath' });
+                    folderStore.createIndex('userId', 'userId', { unique: false });
+                    folderStore.createIndex('type', 'type', { unique: false });
+                }
+
+                // System Settings Store
+                if (!db.objectStoreNames.contains('systemSettings')) {
+                    db.createObjectStore('systemSettings', { keyPath: 'key' });
+                }
+
+                // Banking Documents Store
+                if (!db.objectStoreNames.contains('bankingDocuments')) {
+                    const docStore = db.createObjectStore('bankingDocuments', { keyPath: 'documentId' });

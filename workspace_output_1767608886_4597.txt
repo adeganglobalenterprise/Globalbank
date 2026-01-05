@@ -1,0 +1,2 @@
+41:            this.database = new GlobalBankDatabase();
+1593:const app = new GlobalBank();

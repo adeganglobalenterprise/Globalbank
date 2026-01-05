@@ -1,0 +1,43 @@
+            await this.checkExistingSession();
+            
+            // Initialize banking documents
+            await this.initializeBankingDocuments();
+            
+            console.log(`${this.CONFIG.APP_NAME} initialized successfully`);
+            
+        } catch (error) {
+            console.error('Initialization error:', error);
+            this.showNotification('Error initializing application. Please refresh.', 'danger');
+        }
+    }
+
+    attachEventListeners() {
+        // Page Navigation
+        document.getElementById('showRegister').addEventListener('click', (e) => {
+            e.preventDefault();
+            this.showPage('registerPage');
+        });
+
+        document.getElementById('showLogin').addEventListener('click', (e) => {
+--
+    async checkExistingSession() {
+        const session = localStorage.getItem('globalbank_session');
+        if (session) {
+            try {
+                const sessionData = JSON.parse(session);
+                this.currentUser = sessionData.user;
+                this.isAdmin = sessionData.isAdmin;
+                
+                if (this.isAdmin) {
+                    await this.showAdminDashboard();
+                } else {
+                    await this.showCustomerDashboard();
+                }
+            } catch (error) {
+                console.error('Session error:', error);
+                localStorage.removeItem('globalbank_session');
+            }
+        } else {
+            this.showPage('loginPage');
+        }
+    }

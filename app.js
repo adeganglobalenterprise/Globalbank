@@ -1,68 +1,51 @@
-// Global Bank - International Banking System
-// Developed by Olawale Abdul-Ganiyu Adeshina
-// Email: olawalztegan@gmail.com
+// MiniPay Application - Full JavaScript Implementation
+// Developed by Olawale Abdul-Ganiyu
 
-class GlobalBank {
+class MiniPayApp {
     constructor() {
         this.currentUser = null;
         this.isAdmin = false;
-        this.database = null;
-        this.miningInterval = null;
-        this.dailyCreditInterval = null;
-        this.miningActive = false;
-        
-        // Configuration
-        this.CONFIG = {
-            APP_NAME: 'Global Bank',
-            APP_VERSION: '1.0.0',
-            OWNER: 'olawale abdul-ganiyu adeshina',
-            EMAIL: 'olawalztegan@gmail.com',
-            API_BASE_URL: 'https://api.globalbank-international.com/v1/',
-            MINING_RATE: 0.5,
-            MINING_INTERVAL: 5000,
-            DAILY_CREDIT_AMOUNT: 10.0,
-            SWIFT_CODES: {
-                US: 'GBIBUSNY',
-                UK: 'GBIBUKLD',
-                CH: 'GBIBCHZH',
-                SG: 'GBIBSGSG',
-                NG: 'GBIBNGLA'
-            }
+        this.API_BASE_URL = 'https://api.olawale-minipay.com/v1';
+        this.ADMIN_CREDENTIALS = {
+            email: 'olawalztegan@gmail.com',
+            password: 'admin123' // In production, this should be properly hashed
         };
         
         this.init();
     }
 
-    async init() {
-        console.log(`${this.CONFIG.APP_NAME} initializing...`);
-        
-        try {
-            // Initialize database
-            this.database = await new GlobalBankDatabase();
-            console.log('Database initialized successfully');
-            
-            // Attach event listeners
-            this.attachEventListeners();
-            
-            // Initialize exchange rates
-            await this.initializeExchangeRates();
-            
-            // Check for existing session
-            await this.checkExistingSession();
-            
-            // Initialize banking documents
-            await this.initializeBankingDocuments();
-            
-            console.log(`${this.CONFIG.APP_NAME} initialized successfully`);
-            
-        } catch (error) {
-            console.error('Initialization error:', error);
-            this.showNotification('Error initializing application. Please refresh.', 'danger');
+    init() {
+        this.initializeData();
+        this.attachEventListeners();
+        this.checkExistingSession();
+    }
+
+    initializeData() {
+        // Initialize local storage with default data
+        if (!localStorage.getItem('minipay_users')) {
+            const defaultUsers = [];
+            localStorage.setItem('minipay_users', JSON.stringify(defaultUsers));
+        }
+
+        if (!localStorage.getItem('minipay_transactions')) {
+            const defaultTransactions = [];
+            localStorage.setItem('minipay_transactions', JSON.stringify(defaultTransactions));
+        }
+
+        if (!localStorage.getItem('minipay_system')) {
+            const systemSettings = {
+                totalVolume: 0,
+                apiVersion: '1.0.0',
+                owner: 'olawale abdul-ganiyu',
+                googleAccount: 'olawalztegan@gmail.com',
+                createdAt: new Date().toISOString()
+            };
+            localStorage.setItem('minipay_system', JSON.stringify(systemSettings));
         }
     }
 
     attachEventListeners() {
-        // Page Navigation
+        // Page navigation
         document.getElementById('showRegister').addEventListener('click', (e) => {
             e.preventDefault();
             this.showPage('registerPage');
@@ -88,79 +71,29 @@ class GlobalBank {
         document.getElementById('registerForm').addEventListener('submit', (e) => this.handleRegister(e));
         document.getElementById('adminLoginForm').addEventListener('submit', (e) => this.handleAdminLogin(e));
 
-        // Dashboard Navigation
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                const section = item.dataset.section;
-                if (section) {
-                    this.navigateToSection(section);
-                }
-            });
-        });
+        // Dashboard actions
+        document.getElementById('logoutBtn').addEventListener('click', () => this.logout());
+        document.getElementById('addCreditBtn').addEventListener('click', () => this.showAddCreditModal());
+        document.getElementById('addDebitBtn').addEventListener('click', () => this.showAddDebitModal());
+        document.getElementById('editBalanceBtn').addEventListener('click', () => this.showEditBalanceModal());
+        document.getElementById('sendMoneyBtn').addEventListener('click', () => this.showSendMoneyModal());
+        document.getElementById('receiveMoneyBtn').addEventListener('click', () => this.showReceiveMoneyModal());
+        document.getElementById('historyBtn').addEventListener('click', () => this.showTransactionHistory());
 
-        // Customer Dashboard
-        document.getElementById('customerLogoutBtn').addEventListener('click', () => this.logout());
-
-        // Quick Actions
-        document.getElementById('quickAddFunds').addEventListener('click', () => this.showAddFundsModal());
-        document.getElementById('quickSendMoney').addEventListener('click', () => this.showSendMoneyModal());
-        document.getElementById('quickExchange').addEventListener('click', () => this.navigateToSection('exchange'));
-        document.getElementById('quickMining').addEventListener('click', () => this.navigateToSection('mining'));
-        document.getElementById('quickCrypto').addEventListener('click', () => this.navigateToSection('crypto'));
-        document.getElementById('quickKYC').addEventListener('click', () => this.navigateToSection('kyc'));
-
-        // Banking Services
-        document.getElementById('swiftTransferBtn').addEventListener('click', () => this.showSWIFTTransferModal());
-        document.getElementById('swissBankingBtn').addEventListener('click', () => this.showSwissBankingModal());
-        document.getElementById('commercialBankingBtn').addEventListener('click', () => this.showCommercialBankingModal());
-        document.getElementById('microfinanceBtn').addEventListener('click', () => this.showMicrofinanceModal());
-
-        // Crypto Wallets
-        document.querySelectorAll('.send-crypto-btn').forEach(btn => {
-            btn.addEventListener('click', () => this.showSendCryptoModal(btn.dataset.coin));
-        });
-
-        document.querySelectorAll('.receive-crypto-btn').forEach(btn => {
-            btn.addEventListener('click', () => this.showReceiveCryptoModal(btn.dataset.coin));
-        });
-
-        document.querySelectorAll('.copy-btn').forEach(btn => {
-            btn.addEventListener('click', () => this.copyAddress(btn.dataset.wallet));
-        });
-
-        // Mining
-        document.getElementById('miningToggle').addEventListener('change', (e) => this.toggleMining(e.target.checked));
-
-        // Exchange
-        document.getElementById('exchangeFromCurrency').addEventListener('change', () => this.updateExchangeRate());
-        document.getElementById('exchangeToCurrency').addEventListener('change', () => this.updateExchangeRate());
-        document.getElementById('exchangeFromAmount').addEventListener('input', () => this.calculateExchange());
-        document.getElementById('exchangeBtn').addEventListener('click', () => this.executeExchange());
-
-        // Transfers
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => this.showTransferTab(btn.dataset.tab));
-        });
-
-        document.getElementById('bankTransferForm').addEventListener('submit', (e) => this.handleBankTransfer(e));
-        document.getElementById('cryptoTransferForm').addEventListener('submit', (e) => this.handleCryptoTransfer(e));
-        document.getElementById('walletTransferForm').addEventListener('submit', (e) => this.handleWalletTransfer(e));
-
-        // KYC
-        document.getElementById('kycForm').addEventListener('submit', (e) => this.handleKYCSubmission(e));
-
-        // Documents
-        document.querySelectorAll('.view-doc-btn').forEach(btn => {
-            btn.addEventListener('click', () => this.viewDocument(btn.dataset.doc));
-        });
-
-        // Admin Dashboard
+        // Admin dashboard actions
         document.getElementById('adminLogoutBtn').addEventListener('click', () => this.logout());
+        document.getElementById('manageUsersBtn').addEventListener('click', () => this.showManageUsersModal());
+        document.getElementById('viewAllTransactionsBtn').addEventListener('click', () => this.showAllTransactionsModal());
+        document.getElementById('editUserBalanceBtn').addEventListener('click', () => this.showEditUserBalanceModal());
+        document.getElementById('systemSettingsBtn').addEventListener('click', () => this.showSystemSettingsModal());
 
-        // Modals
-        document.getElementById('closeDocumentModal').addEventListener('click', () => this.closeModal('documentModal'));
-        document.getElementById('closeGeneralModal').addEventListener('click', () => this.closeModal('generalModal'));
+        // Modal close
+        document.getElementById('closeModal').addEventListener('click', () => this.closeModal());
+        document.getElementById('modalOverlay').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modalOverlay')) {
+                this.closeModal();
+            }
+        });
     }
 
     showPage(pageId) {
@@ -168,58 +101,46 @@ class GlobalBank {
         document.getElementById(pageId).classList.add('active');
     }
 
-    async checkExistingSession() {
-        const session = localStorage.getItem('globalbank_session');
+    checkExistingSession() {
+        const session = localStorage.getItem('minipay_session');
         if (session) {
-            try {
-                const sessionData = JSON.parse(session);
-                this.currentUser = sessionData.user;
-                this.isAdmin = sessionData.isAdmin;
-                
-                if (this.isAdmin) {
-                    await this.showAdminDashboard();
-                } else {
-                    await this.showCustomerDashboard();
-                }
-            } catch (error) {
-                console.error('Session error:', error);
-                localStorage.removeItem('globalbank_session');
+            const sessionData = JSON.parse(session);
+            this.currentUser = sessionData.user;
+            this.isAdmin = sessionData.isAdmin;
+            
+            if (this.isAdmin) {
+                this.showAdminDashboard();
+            } else {
+                this.showDashboard();
             }
-        } else {
-            this.showPage('loginPage');
         }
     }
 
     // Authentication Methods
-    async handleLogin(e) {
+    handleLogin(e) {
         e.preventDefault();
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
 
-        try {
-            const user = await this.database.getUserByEmail(email);
-            
-            if (user && user.password === password) {
-                this.currentUser = user;
-                this.isAdmin = false;
-                this.saveSession();
-                await this.showCustomerDashboard();
-                this.showNotification('Login successful!', 'success');
-            } else {
-                this.showNotification('Invalid email or password', 'danger');
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            this.showNotification('Login failed. Please try again.', 'danger');
+        const users = this.getUsers();
+        const user = users.find(u => u.email === email && u.password === password);
+
+        if (user) {
+            this.currentUser = user;
+            this.isAdmin = false;
+            this.saveSession();
+            this.showDashboard();
+            this.showNotification('Login successful!', 'success');
+        } else {
+            this.showNotification('Invalid email or password', 'danger');
         }
     }
 
-    async handleRegister(e) {
+    handleRegister(e) {
         e.preventDefault();
         const fullName = document.getElementById('regFullName').value;
         const email = document.getElementById('regEmail').value;
         const phone = document.getElementById('regPhone').value;
-        const country = document.getElementById('regCountry').value;
         const password = document.getElementById('regPassword').value;
         const confirmPassword = document.getElementById('regConfirmPassword').value;
 
@@ -228,67 +149,45 @@ class GlobalBank {
             return;
         }
 
-        try {
-            const existingUser = await this.database.getUserByEmail(email);
-            if (existingUser) {
-                this.showNotification('Email already registered', 'danger');
-                return;
-            }
-
-            const user = {
-                id: this.database.generateId(),
-                fullName,
-                email,
-                phone,
-                country,
-                password,
-                accountNumber: this.database.generateAccountNumber(),
-                swiftCode: this.database.generateSwiftCode(),
-                bankBalance: 0.0,
-                cryptoBalance: 0.0,
-                btcBalance: 0.0,
-                ethBalance: 0.0,
-                usdtBalance: 0.0,
-                walletAddress: this.database.generateWalletAddress('BTC'),
-                isVerified: false,
-                isAdmin: false,
-                createdAt: new Date().toISOString()
-            };
-
-            await this.database.addUser(user);
-            
-            // Create wallet folder for user
-            await this.database.createWalletFolder({
-                folderPath: `/wallets/${user.id}`,
-                userId: user.id,
-                type: 'crypto',
-                createdAt: new Date().toISOString()
-            });
-
-            this.showNotification('Account created successfully!', 'success');
-            document.getElementById('registerForm').reset();
-            this.showPage('loginPage');
-        } catch (error) {
-            console.error('Registration error:', error);
-            this.showNotification('Registration failed. Please try again.', 'danger');
+        const users = this.getUsers();
+        if (users.find(u => u.email === email)) {
+            this.showNotification('Email already registered', 'danger');
+            return;
         }
+
+        const newUser = {
+            id: this.generateId(),
+            fullName,
+            email,
+            phone,
+            password,
+            accountNumber: this.generateAccountNumber(),
+            balance: 0,
+            createdAt: new Date().toISOString()
+        };
+
+        users.push(newUser);
+        this.saveUsers(users);
+
+        this.showNotification('Account created successfully!', 'success');
+        document.getElementById('registerForm').reset();
+        this.showPage('loginPage');
     }
 
-    async handleAdminLogin(e) {
+    handleAdminLogin(e) {
         e.preventDefault();
         const email = document.getElementById('adminEmail').value;
         const password = document.getElementById('adminPassword').value;
 
-        // Admin credentials
-        if (email === this.CONFIG.EMAIL && password === 'admin123') {
+        if (email === this.ADMIN_CREDENTIALS.email && password === this.ADMIN_CREDENTIALS.password) {
             this.isAdmin = true;
             this.currentUser = {
                 id: 'admin',
-                fullName: 'Olawale Abdul-Ganiyu Adeshina',
+                fullName: 'Olawale Abdul-Ganiyu',
                 email: email
             };
             this.saveSession();
-            await this.showAdminDashboard();
+            this.showAdminDashboard();
             this.showNotification('Admin login successful!', 'success');
         } else {
             this.showNotification('Invalid admin credentials', 'danger');
@@ -296,10 +195,9 @@ class GlobalBank {
     }
 
     logout() {
-        this.stopMining();
         this.currentUser = null;
         this.isAdmin = false;
-        localStorage.removeItem('globalbank_session');
+        localStorage.removeItem('minipay_session');
         this.showPage('loginPage');
         this.showNotification('Logged out successfully', 'success');
     }
@@ -309,179 +207,190 @@ class GlobalBank {
             user: this.currentUser,
             isAdmin: this.isAdmin
         };
-        localStorage.setItem('globalbank_session', JSON.stringify(sessionData));
+        localStorage.setItem('minipay_session', JSON.stringify(sessionData));
     }
 
     // Dashboard Methods
-    async showCustomerDashboard() {
-        this.showPage('customerDashboardPage');
-        document.getElementById('customerUserName').textContent = `Welcome, ${this.currentUser.fullName}`;
-        
-        await this.updateDashboardUI();
-        await this.loadRecentTransactions();
-        
-        // Start daily credit system
-        this.startDailyCredit();
+    showDashboard() {
+        this.showPage('dashboardPage');
+        this.updateDashboardUI();
+        this.loadRecentTransactions();
     }
 
-    async updateDashboardUI() {
+    updateDashboardUI() {
         if (this.currentUser) {
-            document.getElementById('totalBankBalance').textContent = this.formatCurrency(this.currentUser.bankBalance);
-            document.getElementById('totalCryptoBalance').textContent = this.formatCrypto(this.currentUser.cryptoBalance);
-            document.getElementById('customerAccountNumber').textContent = this.currentUser.accountNumber || '-';
-            
-            // Update crypto wallet displays
-            document.getElementById('btcBalance').textContent = this.formatCrypto(this.currentUser.btcBalance);
-            document.getElementById('ethBalance').textContent = this.formatCrypto(this.currentUser.ethBalance);
-            document.getElementById('usdtBalance').textContent = this.formatCrypto(this.currentUser.usdtBalance);
-            document.getElementById('cryptoTotalBalance').textContent = this.formatCrypto(this.currentUser.cryptoBalance);
+            document.getElementById('userName').textContent = `Welcome, ${this.currentUser.fullName}`;
+            document.getElementById('totalBalance').textContent = this.formatCurrency(this.currentUser.balance);
+            document.getElementById('accountNumber').textContent = this.currentUser.accountNumber || '-';
+            document.getElementById('accountHolder').textContent = this.currentUser.fullName;
         }
     }
 
-    async loadRecentTransactions() {
-        try {
-            const transactions = await this.database.getTransactions(this.currentUser.id);
-            const recentTransactions = transactions.slice(-10).reverse();
+    loadRecentTransactions() {
+        const transactions = this.getTransactions();
+        const userTransactions = transactions.filter(t => t.userId === this.currentUser.id);
+        const recentTransactions = userTransactions.slice(-10).reverse();
 
-            const transactionsList = document.getElementById('recentTransactionsList');
-            
-            if (recentTransactions.length === 0) {
-                transactionsList.innerHTML = '<p class="no-data">No transactions yet</p>';
-                return;
-            }
+        const transactionsList = document.getElementById('transactionsList');
+        
+        if (recentTransactions.length === 0) {
+            transactionsList.innerHTML = '<p class="no-transactions">No transactions yet</p>';
+            return;
+        }
 
-            transactionsList.innerHTML = recentTransactions.map(transaction => `
-                <div class="transaction-item">
-                    <div class="transaction-info">
-                        <span class="transaction-type">${this.getTransactionTypeText(transaction.type)}</span>
-                        <span class="transaction-date">${this.formatDate(transaction.createdAt)}</span>
-                    </div>
-                    <span class="transaction-amount ${transaction.type === 'credit' ? 'credit' : 'debit'}">
-                        ${transaction.type === 'credit' ? '+' : '-'}${this.formatAmount(transaction.amount, transaction.currency)}
-                    </span>
+        transactionsList.innerHTML = recentTransactions.map(transaction => `
+            <div class="transaction-item">
+                <div class="transaction-info">
+                    <span class="transaction-type">${this.getTransactionTypeText(transaction.type)}</span>
+                    <span class="transaction-date">${this.formatDate(transaction.createdAt)}</span>
                 </div>
-            `).join('');
-        } catch (error) {
-            console.error('Error loading transactions:', error);
-        }
+                <span class="transaction-amount ${transaction.type}">
+                    ${transaction.type === 'credit' ? '+' : '-'}${this.formatCurrency(transaction.amount)}
+                </span>
+            </div>
+        `).join('');
     }
 
-    navigateToSection(sectionId) {
-        // Hide all sections
-        document.querySelectorAll('.content-section').forEach(section => {
-            section.classList.remove('active');
-        });
-        
-        // Show selected section
-        const targetSection = document.getElementById(sectionId + 'Section');
-        if (targetSection) {
-            targetSection.classList.add('active');
-        }
-        
-        // Update navigation
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.classList.remove('active');
-            if (item.dataset.section === sectionId) {
-                item.classList.add('active');
-            }
-        });
-    }
-
-    // Banking Methods
-    showAddFundsModal() {
+    // Transaction Methods
+    showAddCreditModal() {
         const modalContent = `
-            <form id="addFundsForm">
+            <form id="addCreditForm">
                 <div class="form-group">
-                    <label for="fundSource">Fund Source</label>
-                    <select id="fundSource" required>
-                        <option value="mastercard">MasterCard</option>
-                        <option value="visa">Visa</option>
-                        <option value="versa">Versa</option>
-                        <option value="giftcard">Gift Card</option>
-                        <option value="paypal">PayPal</option>
-                        <option value="payeer">Payeer</option>
-                        <option value="westernunion">Western Union</option>
-                        <option value="skrill">Skrill</option>
-                        <option value="coinbase">Coinbase</option>
-                        <option value="blockchain">Blockchain</option>
-                    </select>
+                    <label for="creditAmount">Amount ($)</label>
+                    <input type="number" id="creditAmount" placeholder="Enter amount" step="0.01" min="0" required>
                 </div>
                 <div class="form-group">
-                    <label for="fundAmount">Amount ($)</label>
-                    <input type="number" id="fundAmount" placeholder="Enter amount" step="0.01" min="0" required>
+                    <label for="creditDescription">Description</label>
+                    <input type="text" id="creditDescription" placeholder="Enter description">
                 </div>
-                <div class="form-group">
-                    <label for="cardNumber">Card/Wallet Number</label>
-                    <input type="text" id="cardNumber" placeholder="Enter card or wallet number" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Add Funds</button>
+                <button type="submit" class="btn btn-primary">Add Credit</button>
             </form>
         `;
 
-        this.showModal('Add Funds', modalContent);
-        document.getElementById('addFundsForm').addEventListener('submit', (e) => this.handleAddFunds(e));
+        this.showModal('Add Credit', modalContent);
+        document.getElementById('addCreditForm').addEventListener('submit', (e) => this.handleAddCredit(e));
     }
 
-    async handleAddFunds(e) {
+    handleAddCredit(e) {
         e.preventDefault();
-        const source = document.getElementById('fundSource').value;
-        const amount = parseFloat(document.getElementById('fundAmount').value);
-        const cardNumber = document.getElementById('cardNumber').value;
+        const amount = parseFloat(document.getElementById('creditAmount').value);
+        const description = document.getElementById('creditDescription').value || 'Credit added';
 
         if (amount <= 0) {
             this.showNotification('Please enter a valid amount', 'danger');
             return;
         }
 
-        try {
-            // Add transaction
-            await this.addTransaction('credit', amount, 'USD', `Funds added via ${source}`);
+        this.addTransaction('credit', amount, description);
+        this.currentUser.balance += amount;
+        this.updateUser(this.currentUser);
+        this.updateDashboardUI();
+        this.loadRecentTransactions();
+        this.closeModal();
+        this.showNotification(`$${this.formatCurrency(amount)} added to your balance`, 'success');
+    }
 
-            // Update user balance
-            this.currentUser.bankBalance += amount;
-            await this.database.updateUser(this.currentUser);
+    showAddDebitModal() {
+        const modalContent = `
+            <form id="addDebitForm">
+                <div class="form-group">
+                    <label for="debitAmount">Amount ($)</label>
+                    <input type="number" id="debitAmount" placeholder="Enter amount" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="debitDescription">Description</label>
+                    <input type="text" id="debitDescription" placeholder="Enter description">
+                </div>
+                <button type="submit" class="btn btn-primary">Add Debit</button>
+            </form>
+        `;
 
-            // Save payment method
-            await this.database.addPaymentMethod({
-                id: this.database.generateId(),
-                userId: this.currentUser.id,
-                type: source,
-                identifier: cardNumber,
-                isDefault: false,
-                createdAt: new Date().toISOString()
-            });
+        this.showModal('Add Debit', modalContent);
+        document.getElementById('addDebitForm').addEventListener('submit', (e) => this.handleAddDebit(e));
+    }
 
-            await this.updateDashboardUI();
-            await this.loadRecentTransactions();
-            this.closeModal('generalModal');
-            this.showNotification(`$${this.formatCurrency(amount)} added to your account`, 'success');
-        } catch (error) {
-            console.error('Add funds error:', error);
-            this.showNotification('Failed to add funds. Please try again.', 'danger');
+    handleAddDebit(e) {
+        e.preventDefault();
+        const amount = parseFloat(document.getElementById('debitAmount').value);
+        const description = document.getElementById('debitDescription').value || 'Debit added';
+
+        if (amount <= 0) {
+            this.showNotification('Please enter a valid amount', 'danger');
+            return;
         }
+
+        if (amount > this.currentUser.balance) {
+            this.showNotification('Insufficient balance', 'danger');
+            return;
+        }
+
+        this.addTransaction('debit', amount, description);
+        this.currentUser.balance -= amount;
+        this.updateUser(this.currentUser);
+        this.updateDashboardUI();
+        this.loadRecentTransactions();
+        this.closeModal();
+        this.showNotification(`$${this.formatCurrency(amount)} deducted from your balance`, 'success');
+    }
+
+    showEditBalanceModal() {
+        const modalContent = `
+            <form id="editBalanceForm">
+                <div class="form-group">
+                    <label for="newBalance">New Balance ($)</label>
+                    <input type="number" id="newBalance" placeholder="Enter new balance" step="0.01" min="0" value="${this.currentUser.balance}" required>
+                </div>
+                <div class="form-group">
+                    <label for="editReason">Reason</label>
+                    <input type="text" id="editReason" placeholder="Enter reason for balance change">
+                </div>
+                <button type="submit" class="btn btn-primary">Update Balance</button>
+            </form>
+        `;
+
+        this.showModal('Edit Balance', modalContent);
+        document.getElementById('editBalanceForm').addEventListener('submit', (e) => this.handleEditBalance(e));
+    }
+
+    handleEditBalance(e) {
+        e.preventDefault();
+        const newBalance = parseFloat(document.getElementById('newBalance').value);
+        const reason = document.getElementById('editReason').value || 'Balance edited';
+
+        if (newBalance < 0) {
+            this.showNotification('Balance cannot be negative', 'danger');
+            return;
+        }
+
+        const difference = newBalance - this.currentUser.balance;
+        
+        if (difference > 0) {
+            this.addTransaction('credit', difference, reason);
+        } else if (difference < 0) {
+            this.addTransaction('debit', Math.abs(difference), reason);
+        }
+
+        this.currentUser.balance = newBalance;
+        this.updateUser(this.currentUser);
+        this.updateDashboardUI();
+        this.loadRecentTransactions();
+        this.closeModal();
+        this.showNotification('Balance updated successfully', 'success');
     }
 
     showSendMoneyModal() {
         const modalContent = `
             <form id="sendMoneyForm">
                 <div class="form-group">
-                    <label for="sendMethod">Send Method</label>
-                    <select id="sendMethod" required>
-                        <option value="bank">Bank Transfer</option>
-                        <option value="wallet">Wallet Transfer</option>
-                        <option value="email">Email Transfer</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="recipientInfo">Recipient Account/Email</label>
-                    <input type="text" id="recipientInfo" placeholder="Enter account number or email" required>
+                    <label for="recipientAccount">Recipient Account Number</label>
+                    <input type="text" id="recipientAccount" placeholder="Enter account number" required>
                 </div>
                 <div class="form-group">
                     <label for="sendAmount">Amount ($)</label>
                     <input type="number" id="sendAmount" placeholder="Enter amount" step="0.01" min="0" required>
                 </div>
                 <div class="form-group">
-                    <label for="sendDescription">Description</label>
+                    <label for="sendDescription">Description (Optional)</label>
                     <input type="text" id="sendDescription" placeholder="Enter description">
                 </div>
                 <button type="submit" class="btn btn-primary">Send Money</button>
@@ -492,10 +401,9 @@ class GlobalBank {
         document.getElementById('sendMoneyForm').addEventListener('submit', (e) => this.handleSendMoney(e));
     }
 
-    async handleSendMoney(e) {
+    handleSendMoney(e) {
         e.preventDefault();
-        const method = document.getElementById('sendMethod').value;
-        const recipient = document.getElementById('recipientInfo').value;
+        const recipientAccount = document.getElementById('recipientAccount').value;
         const amount = parseFloat(document.getElementById('sendAmount').value);
         const description = document.getElementById('sendDescription').value || 'Transfer';
 
@@ -504,1015 +412,412 @@ class GlobalBank {
             return;
         }
 
-        if (amount > this.currentUser.bankBalance) {
+        if (amount > this.currentUser.balance) {
             this.showNotification('Insufficient balance', 'danger');
             return;
         }
 
-        try {
-            // Add transaction
-            await this.addTransaction('debit', amount, 'USD', `Transfer to ${recipient} via ${method} - ${description}`);
+        const users = this.getUsers();
+        const recipient = users.find(u => u.accountNumber === recipientAccount);
 
-            // Update user balance
-            this.currentUser.bankBalance -= amount;
-            await this.database.updateUser(this.currentUser);
-
-            await this.updateDashboardUI();
-            await this.loadRecentTransactions();
-            this.closeModal('generalModal');
-            this.showNotification(`$${this.formatCurrency(amount)} sent successfully`, 'success');
-        } catch (error) {
-            console.error('Send money error:', error);
-            this.showNotification('Failed to send money. Please try again.', 'danger');
-        }
-    }
-
-    // Banking Services
-    showSWIFTTransferModal() {
-        const modalContent = `
-            <div class="swift-info">
-                <h3>SWIFT Transfer</h3>
-                <p>Send money globally using the SWIFT network</p>
-                <div class="swift-details">
-                    <p><strong>Your SWIFT Code:</strong> ${this.currentUser.swiftCode}</p>
-                    <p><strong>Your Account Number:</strong> ${this.currentUser.accountNumber}</p>
-                </div>
-            </div>
-            <form id="swiftForm" style="margin-top: 1rem;">
-                <div class="form-group">
-                    <label for="swiftBank">Recipient Bank</label>
-                    <input type="text" id="swiftBank" placeholder="Enter bank name" required>
-                </div>
-                <div class="form-group">
-                    <label for="swiftCode">Recipient SWIFT Code</label>
-                    <input type="text" id="swiftCode" placeholder="Enter SWIFT code" required>
-                </div>
-                <div class="form-group">
-                    <label for="swiftAccount">Recipient Account Number</label>
-                    <input type="text" id="swiftAccount" placeholder="Enter account number" required>
-                </div>
-                <div class="form-group">
-                    <label for="swiftAmount">Amount ($)</label>
-                    <input type="number" id="swiftAmount" placeholder="Enter amount" step="0.01" min="0" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Send SWIFT Transfer</button>
-            </form>
-        `;
-
-        this.showModal('SWIFT Transfer', modalContent);
-        document.getElementById('swiftForm').addEventListener('submit', (e) => this.handleSWIFTTransfer(e));
-    }
-
-    async handleSWIFTTransfer(e) {
-        e.preventDefault();
-        const bank = document.getElementById('swiftBank').value;
-        const swiftCode = document.getElementById('swiftCode').value;
-        const account = document.getElementById('swiftAccount').value;
-        const amount = parseFloat(document.getElementById('swiftAmount').value);
-
-        if (amount <= 0) {
-            this.showNotification('Please enter a valid amount', 'danger');
+        if (!recipient) {
+            this.showNotification('Recipient account not found', 'danger');
             return;
         }
 
-        if (amount > this.currentUser.bankBalance) {
-            this.showNotification('Insufficient balance', 'danger');
+        if (recipient.id === this.currentUser.id) {
+            this.showNotification('Cannot send money to yourself', 'danger');
             return;
         }
 
-        try {
-            await this.addTransaction('debit', amount, 'USD', `SWIFT transfer to ${account} at ${bank}`);
-            this.currentUser.bankBalance -= amount;
-            await this.database.updateUser(this.currentUser);
-
-            await this.updateDashboardUI();
-            await this.loadRecentTransactions();
-            this.closeModal('generalModal');
-            this.showNotification('SWIFT transfer initiated successfully', 'success');
-        } catch (error) {
-            console.error('SWIFT transfer error:', error);
-            this.showNotification('Failed to initiate SWIFT transfer', 'danger');
-        }
-    }
-
-    showSwissBankingModal() {
-        const modalContent = `
-            <div class="swiss-banking-info">
-                <h3>Swiss Banking Services</h3>
-                <p>Access premium Swiss banking services</p>
-                <ul>
-                    <li>Secure wealth management</li>
-                    <li>International investment options</li>
-                    <li>Multi-currency accounts</li>
-                    <li>Premium customer service</li>
-                </ul>
-            </div>
-            <div style="margin-top: 1rem;">
-                <button class="btn btn-primary" onclick="app.closeModal('generalModal')">I Understand</button>
-            </div>
-        `;
-
-        this.showModal('Swiss Banking', modalContent);
-    }
-
-    showCommercialBankingModal() {
-        const modalContent = `
-            <div class="commercial-banking-info">
-                <h3>Commercial Banking</h3>
-                <p>Business and corporate banking solutions</p>
-                <ul>
-                    <li>Business accounts</li>
-                    <li>Loans and financing</li>
-                    <li>Trade finance</li>
-                    <li>Cash management</li>
-                </ul>
-            </div>
-            <div style="margin-top: 1rem;">
-                <button class="btn btn-primary" onclick="app.closeModal('generalModal')">I Understand</button>
-            </div>
-        `;
-
-        this.showModal('Commercial Banking', modalContent);
-    }
-
-    showMicrofinanceModal() {
-        const modalContent = `
-            <div class="microfinance-info">
-                <h3>Microfinance Services</h3>
-                <p>Micro loans and financial services</p>
-                <ul>
-                    <li>Small business loans</li>
-                    <li>Personal loans</li>
-                    <li>Savings accounts</li>
-                    <li>Financial education</li>
-                </ul>
-            </div>
-            <div style="margin-top: 1rem;">
-                <button class="btn btn-primary" onclick="app.closeModal('generalModal')">I Understand</button>
-            </div>
-        `;
-
-        this.showModal('Microfinance', modalContent);
-    }
-
-    // Crypto Wallet Methods
-    showSendCryptoModal(coinType) {
-        const modalContent = `
-            <form id="sendCryptoForm">
-                <div class="form-group">
-                    <label>Cryptocurrency</label>
-                    <input type="text" value="${coinType}" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="recipientWallet">Recipient Wallet Address</label>
-                    <input type="text" id="recipientWallet" placeholder="Enter wallet address" required>
-                </div>
-                <div class="form-group">
-                    <label for="cryptoAmount">Amount</label>
-                    <input type="number" id="cryptoAmount" placeholder="Enter amount" step="0.00000001" min="0" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Send ${coinType}</button>
-            </form>
-        `;
-
-        this.showModal(`Send ${coinType}`, modalContent);
-        document.getElementById('sendCryptoForm').addEventListener('submit', (e) => this.handleSendCrypto(e, coinType));
-    }
-
-    async handleSendCrypto(e, coinType) {
-        e.preventDefault();
-        const wallet = document.getElementById('recipientWallet').value;
-        const amount = parseFloat(document.getElementById('cryptoAmount').value);
-
-        if (amount <= 0) {
-            this.showNotification('Please enter a valid amount', 'danger');
-            return;
-        }
-
-        // Check balance
-        const balanceField = `${coinType.toLowerCase()}Balance`;
-        if (amount > this.currentUser[balanceField]) {
-            this.showNotification('Insufficient crypto balance', 'danger');
-            return;
-        }
-
-        try {
-            // Add transaction
-            await this.addTransaction('debit', amount, coinType, `Send ${coinType} to ${wallet}`);
-
-            // Update user balance
-            this.currentUser[balanceField] -= amount;
-            this.currentUser.cryptoBalance -= amount;
-            await this.database.updateUser(this.currentUser);
-
-            await this.updateDashboardUI();
-            await this.loadRecentTransactions();
-            this.closeModal('generalModal');
-            this.showNotification(`${amount} ${coinType} sent successfully`, 'success');
-        } catch (error) {
-            console.error('Send crypto error:', error);
-            this.showNotification('Failed to send crypto', 'danger');
-        }
-    }
-
-    showReceiveCryptoModal(coinType) {
-        let walletAddress = '';
-        switch(coinType) {
-            case 'BTC':
-                walletAddress = document.getElementById('btcAddress').value;
-                break;
-            case 'ETH':
-                walletAddress = document.getElementById('ethAddress').value;
-                break;
-            case 'USDT':
-                walletAddress = document.getElementById('usdtAddress').value;
-                break;
-        }
-
-        const modalContent = `
-            <div class="receive-crypto-info">
-                <h3>Receive ${coinType}</h3>
-                <div class="wallet-address-display">
-                    <label>Your ${coinType} Wallet Address:</label>
-                    <input type="text" value="${walletAddress}" readonly>
-                    <button class="btn btn-sm" onclick="navigator.clipboard.writeText('${walletAddress}'); app.showNotification('Address copied!', 'success')">Copy</button>
-                </div>
-                <p style="margin-top: 1rem; color: var(--text-muted);">
-                    Share this address to receive ${coinType} from other wallets or exchanges.
-                </p>
-            </div>
-        `;
-
-        this.showModal(`Receive ${coinType}`, modalContent);
-    }
-
-    copyAddress(walletType) {
-        let address = '';
-        switch(walletType) {
-            case 'btc':
-                address = document.getElementById('btcAddress').value;
-                break;
-            case 'eth':
-                address = document.getElementById('ethAddress').value;
-                break;
-            case 'usdt':
-                address = document.getElementById('usdtAddress').value;
-                break;
-        }
-        
-        navigator.clipboard.writeText(address);
-        this.showNotification('Address copied to clipboard', 'success');
-    }
-
-    // Mining Methods
-    toggleMining(active) {
-        this.miningActive = active;
-        const statusText = document.getElementById('miningStatusText');
-        
-        if (active) {
-            statusText.textContent = 'ON';
-            statusText.style.color = 'var(--success-color)';
-            this.startMining();
-        } else {
-            statusText.textContent = 'OFF';
-            statusText.style.color = 'var(--text-muted)';
-            this.stopMining();
-        }
-    }
-
-    startMining() {
-        if (this.miningInterval) return;
-        
-        let miningTime = 0;
-        
-        this.miningInterval = setInterval(async () => {
-            try {
-                // Add 0.5 coins to balance
-                const miningAmount = this.CONFIG.MINING_RATE;
-                this.currentUser.cryptoBalance += miningAmount;
-                this.currentUser.btcBalance += miningAmount;
-                
-                // Update database
-                await this.database.updateUser(this.currentUser);
-                
-                // Add mining operation record
-                await this.database.addMiningOperation({
-                    id: this.database.generateId(),
-                    userId: this.currentUser.id,
-                    amount: miningAmount,
-                    status: 'completed',
-                    createdAt: new Date().toISOString()
-                });
-                
-                // Add transaction
-                await this.addTransaction('credit', miningAmount, 'BTC', 'Mining reward');
-                
-                // Update UI
-                await this.updateDashboardUI();
-                
-                // Update mining time
-                miningTime += this.CONFIG.MINING_INTERVAL / 1000;
-                document.getElementById('miningTime').textContent = this.formatTime(miningTime);
-                document.getElementById('totalMined').textContent = this.formatCrypto(this.currentUser.cryptoBalance);
-                
-                // Load mining operations
-                await this.loadMiningOperations();
-                
-                console.log(`Mining: +${miningAmount} BTC added`);
-                
-            } catch (error) {
-                console.error('Mining error:', error);
-            }
-        }, this.CONFIG.MINING_INTERVAL);
-        
-        this.showNotification('Mining started! 0.5 BTC will be added every 5 seconds', 'success');
-    }
-
-    stopMining() {
-        if (this.miningInterval) {
-            clearInterval(this.miningInterval);
-            this.miningInterval = null;
-            this.showNotification('Mining stopped', 'info');
-        }
-    }
-
-    async loadMiningOperations() {
-        try {
-            const operations = await this.database.getMiningOperations(this.currentUser.id);
-            const recentOperations = operations.slice(-10).reverse();
-
-            const operationsList = document.getElementById('miningOperationsList');
-            
-            if (recentOperations.length === 0) {
-                operationsList.innerHTML = '<p class="no-data">No mining operations yet</p>';
-                return;
-            }
-
-            operationsList.innerHTML = recentOperations.map(op => `
-                <div class="transaction-item">
-                    <div class="transaction-info">
-                        <span class="transaction-type">Mining Reward</span>
-                        <span class="transaction-date">${this.formatDate(op.createdAt)}</span>
-                    </div>
-                    <span class="transaction-amount credit">+${this.formatCrypto(op.amount)} BTC</span>
-                </div>
-            `).join('');
-        } catch (error) {
-            console.error('Error loading mining operations:', error);
-        }
-    }
-
-    // Daily Credit System
-    startDailyCredit() {
-        const checkDailyCredit = async () => {
-            const today = new Date().toDateString();
-            const lastCredit = await this.database.getSetting('lastDailyCredit');
-            
-            if (lastCredit !== today) {
-                try {
-                    // Add daily credit
-                    const creditAmount = this.CONFIG.DAILY_CREDIT_AMOUNT;
-                    this.currentUser.bankBalance += creditAmount;
-                    await this.database.updateUser(this.currentUser);
-                    
-                    // Add transaction
-                    await this.addTransaction('credit', creditAmount, 'USD', 'Daily credit bonus');
-                    
-                    // Update last credit date
-                    await this.database.setSetting('lastDailyCredit', today);
-                    
-                    await this.updateDashboardUI();
-                    await this.loadRecentTransactions();
-                    
-                    this.showNotification(`Daily credit of $${this.formatCurrency(creditAmount)} added!`, 'success');
-                } catch (error) {
-                    console.error('Daily credit error:', error);
-                }
-            }
-        };
-
-        // Check immediately and then every hour
-        checkDailyCredit();
-        this.dailyCreditInterval = setInterval(checkDailyCredit, 3600000);
-    }
-
-    // Exchange Methods
-    async initializeExchangeRates() {
-        const rates = [
-            { pair: 'USD/BTC', rate: 0.000015 },
-            { pair: 'USD/ETH', rate: 0.00032 },
-            { pair: 'USD/USDT', rate: 1.0 },
-            { pair: 'EUR/USD', rate: 1.08 },
-            { pair: 'GBP/USD', rate: 1.27 },
-            { pair: 'BTC/USD', rate: 66666.67 },
-            { pair: 'ETH/USD', rate: 3125.00 },
-            { pair: 'USDT/USD', rate: 1.0 },
-            { pair: 'BTC/ETH', rate: 21.33 },
-            { pair: 'ETH/BTC', rate: 0.0469 }
-        ];
-
-        for (const rate of rates) {
-            await this.database.setExchangeRate(rate.pair, rate.rate);
-        }
-
-        this.updateExchangeRate();
-    }
-
-    async updateExchangeRate() {
-        const fromCurrency = document.getElementById('exchangeFromCurrency').value;
-        const toCurrency = document.getElementById('exchangeToCurrency').value;
-        const pair = `${fromCurrency}/${toCurrency}`;
-        
-        const rateData = await this.database.getExchangeRate(pair);
-        
-        if (rateData) {
-            document.getElementById('exchangeRateDisplay').textContent = 
-                `1 ${fromCurrency} = ${rateData.rate} ${toCurrency}`;
-            this.calculateExchange();
-        }
-    }
-
-    calculateExchange() {
-        const fromAmount = parseFloat(document.getElementById('exchangeFromAmount').value) || 0;
-        const fromCurrency = document.getElementById('exchangeFromCurrency').value;
-        const toCurrency = document.getElementById('exchangeToCurrency').value;
-        const pair = `${fromCurrency}/${toCurrency}`;
-        
-        // Get rate from display
-        const rateText = document.getElementById('exchangeRateDisplay').textContent;
-        const rateMatch = rateText.match(/[\d.]+$/);
-        
-        if (rateMatch && fromAmount > 0) {
-            const rate = parseFloat(rateMatch[0]);
-            const toAmount = (fromAmount * rate).toFixed(8);
-            document.getElementById('exchangeToAmount').value = toAmount;
-        }
-    }
-
-    async executeExchange() {
-        const fromAmount = parseFloat(document.getElementById('exchangeFromAmount').value);
-        const fromCurrency = document.getElementById('exchangeFromCurrency').value;
-        const toCurrency = document.getElementById('exchangeToCurrency').value;
-        const toAmount = parseFloat(document.getElementById('exchangeToAmount').value);
-
-        if (!fromAmount || fromAmount <= 0) {
-            this.showNotification('Please enter a valid amount', 'danger');
-            return;
-        }
-
-        try {
-            // Check if user has sufficient balance
-            if (fromCurrency === 'USD' || fromCurrency === 'EUR' || fromCurrency === 'GBP') {
-                if (fromAmount > this.currentUser.bankBalance) {
-                    this.showNotification('Insufficient balance', 'danger');
-                    return;
-                }
-                this.currentUser.bankBalance -= fromAmount;
-            } else {
-                const balanceField = `${fromCurrency.toLowerCase()}Balance`;
-                if (fromAmount > this.currentUser[balanceField]) {
-                    this.showNotification('Insufficient crypto balance', 'danger');
-                    return;
-                }
-                this.currentUser[balanceField] -= fromAmount;
-                this.currentUser.cryptoBalance -= fromAmount;
-            }
-
-            // Add to destination balance
-            if (toCurrency === 'USD' || toCurrency === 'EUR' || toCurrency === 'GBP') {
-                this.currentUser.bankBalance += toAmount;
-            } else {
-                const balanceField = `${toCurrency.toLowerCase()}Balance`;
-                this.currentUser[balanceField] += toAmount;
-                this.currentUser.cryptoBalance += toAmount;
-            }
-
-            await this.database.updateUser(this.currentUser);
-            await this.addTransaction('debit', fromAmount, fromCurrency, `Exchange ${fromCurrency} to ${toCurrency}`);
-            await this.addTransaction('credit', toAmount, toCurrency, `Exchange from ${fromCurrency}`);
-
-            await this.updateDashboardUI();
-            document.getElementById('exchangeFromAmount').value = '';
-            document.getElementById('exchangeToAmount').value = '';
-
-            this.showNotification(`Exchanged ${fromAmount} ${fromCurrency} to ${toAmount} ${toCurrency}`, 'success');
-        } catch (error) {
-            console.error('Exchange error:', error);
-            this.showNotification('Exchange failed. Please try again.', 'danger');
-        }
-    }
-
-    // Transfer Methods
-    showTransferTab(tabId) {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.transfer-form').forEach(form => form.classList.remove('active'));
-        
-        document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-        document.getElementById(tabId).classList.add('active');
-    }
-
-    async handleBankTransfer(e) {
-        e.preventDefault();
-        const bank = document.getElementById('recipientBank').value;
-        const account = document.getElementById('recipientAccount').value;
-        const swift = document.getElementById('recipientSwift').value;
-        const email = document.getElementById('recipientEmail').value;
-        const amount = parseFloat(document.getElementById('transferAmount').value);
-        const description = document.getElementById('transferDescription').value || 'Bank transfer';
-
-        if (amount <= 0) {
-            this.showNotification('Please enter a valid amount', 'danger');
-            return;
-        }
-
-        if (amount > this.currentUser.bankBalance) {
-            this.showNotification('Insufficient balance', 'danger');
-            return;
-        }
-
-        try {
-            await this.addTransaction('debit', amount, 'USD', `Transfer to ${account} at ${bank} - ${description}`);
-            this.currentUser.bankBalance -= amount;
-            await this.database.updateUser(this.currentUser);
-
-            await this.updateDashboardUI();
-            await this.loadRecentTransactions();
-            document.getElementById('bankTransferForm').reset();
-
-            this.showNotification(`Bank transfer of $${this.formatCurrency(amount)} sent successfully`, 'success');
-        } catch (error) {
-            console.error('Bank transfer error:', error);
-            this.showNotification('Transfer failed. Please try again.', 'danger');
-        }
-    }
-
-    async handleCryptoTransfer(e) {
-        e.preventDefault();
-        const coinType = document.getElementById('cryptoCoinType').value;
-        const wallet = document.getElementById('recipientWalletAddress').value;
-        const amount = parseFloat(document.getElementById('cryptoTransferAmount').value);
-
-        if (amount <= 0) {
-            this.showNotification('Please enter a valid amount', 'danger');
-            return;
-        }
-
-        const balanceField = `${coinType.toLowerCase()}Balance`;
-        if (amount > this.currentUser[balanceField]) {
-            this.showNotification('Insufficient crypto balance', 'danger');
-            return;
-        }
-
-        try {
-            await this.addTransaction('debit', amount, coinType, `Crypto transfer to ${wallet}`);
-            this.currentUser[balanceField] -= amount;
-            this.currentUser.cryptoBalance -= amount;
-            await this.database.updateUser(this.currentUser);
-
-            await this.updateDashboardUI();
-            await this.loadRecentTransactions();
-            document.getElementById('cryptoTransferForm').reset();
-
-            this.showNotification(`${amount} ${coinType} sent successfully`, 'success');
-        } catch (error) {
-            console.error('Crypto transfer error:', error);
-            this.showNotification('Transfer failed. Please try again.', 'danger');
-        }
-    }
-
-    async handleWalletTransfer(e) {
-        e.preventDefault();
-        const email = document.getElementById('walletRecipientEmail').value;
-        const amount = parseFloat(document.getElementById('walletTransferAmount').value);
-
-        if (amount <= 0) {
-            this.showNotification('Please enter a valid amount', 'danger');
-            return;
-        }
-
-        if (amount > this.currentUser.bankBalance) {
-            this.showNotification('Insufficient balance', 'danger');
-            return;
-        }
-
-        try {
-            await this.addTransaction('debit', amount, 'USD', `Wallet transfer to ${email}`);
-            this.currentUser.bankBalance -= amount;
-            await this.database.updateUser(this.currentUser);
-
-            await this.updateDashboardUI();
-            await this.loadRecentTransactions();
-            document.getElementById('walletTransferForm').reset();
-
-            this.showNotification(`$${this.formatCurrency(amount)} sent to ${email}`, 'success');
-        } catch (error) {
-            console.error('Wallet transfer error:', error);
-            this.showNotification('Transfer failed. Please try again.', 'danger');
-        }
-    }
-
-    // KYC Methods
-    async handleKYCSubmission(e) {
-        e.preventDefault();
-        const fullName = document.getElementById('kycFullName').value;
-        const dob = document.getElementById('kycDateOfBirth').value;
-        const address = document.getElementById('kycAddress').value;
-        const city = document.getElementById('kycCity').value;
-        const country = document.getElementById('kycCountry').value;
-        const phone = document.getElementById('kycPhoneNumber').value;
-        const passportFile = document.getElementById('kycPassport').files[0];
-        const idCardFile = document.getElementById('kycIdCard').files[0];
-
-        try {
-            // Read files
-            const passportData = await this.readFileAsDataURL(passportFile);
-            const idCardData = idCardFile ? await this.readFileAsDataURL(idCardFile) : null;
-
-            // Save KYC documents
-            const kycData = {
-                userId: this.currentUser.id,
-                fullName,
-                dateOfBirth: dob,
-                address,
-                city,
-                country,
-                phone,
-                passportPhoto: passportData,
-                idCard: idCardData,
-                status: 'pending',
-                submittedAt: new Date().toISOString(),
-                verifiedAt: null
-            };
-
-            await this.database.saveKYCDocuments(kycData);
-
-            // Update user verification status
-            this.currentUser.isVerified = true; // Auto-approve for demo
-            await this.database.updateUser(this.currentUser);
-
-            // Update UI
-            document.getElementById('kycStatus').textContent = 'Pending Review';
-            document.getElementById('kycStatusBadge').textContent = 'Pending';
-            document.getElementById('kycSubmittedDate').textContent = this.formatDate(new Date());
-
-            this.showNotification('KYC documents submitted successfully!', 'success');
-            document.getElementById('kycForm').reset();
-        } catch (error) {
-            console.error('KYC submission error:', error);
-            this.showNotification('Failed to submit KYC documents', 'danger');
-        }
-    }
-
-    readFileAsDataURL(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }
-
-    // Banking Documents
-    async initializeBankingDocuments() {
-        const documents = [
-            {
-                documentId: 'trademark',
-                documentType: 'trademark',
-                title: 'Trademark Approval Certificate',
-                content: this.generateTrademarkDocument(),
-                status: 'approved',
-                createdAt: new Date().toISOString()
-            },
-            {
-                documentId: 'financial-law',
-                documentType: 'financial-law',
-                title: 'Financial Law Permit',
-                content: this.generateFinancialLawDocument(),
-                status: 'approved',
-                createdAt: new Date().toISOString()
-            },
-            {
-                documentId: 'world-bank',
-                documentType: 'world-bank-permit',
-                title: 'World Bank Operating Permit',
-                content: this.generateWorldBankDocument(),
-                status: 'approved',
-                createdAt: new Date().toISOString()
-            },
-            {
-                documentId: 'banking-license',
-                documentType: 'banking-license',
-                title: 'Full Banking License',
-                content: this.generateBankingLicenseDocument(),
-                status: 'approved',
-                createdAt: new Date().toISOString()
-            },
-            {
-                documentId: 'business-registration',
-                documentType: 'business-registration',
-                title: 'Business Registration Certificate',
-                content: this.generateBusinessRegistrationDocument(),
-                status: 'approved',
-                createdAt: new Date().toISOString()
-            },
-            {
-                documentId: 'business-agreement',
-                documentType: 'business-agreement',
-                title: 'Business Agreement',
-                content: this.generateBusinessAgreementDocument(),
-                status: 'approved',
-                createdAt: new Date().toISOString()
-            }
-        ];
-
-        for (const doc of documents) {
-            await this.database.addBankingDocument(doc);
-        }
-    }
-
-    viewDocument(docId) {
-        this.database.getBankingDocuments().then(documents => {
-            const document = documents.find(d => d.documentId === docId);
-            if (document) {
-                document.getElementById('documentModalTitle').textContent = document.title;
-                document.getElementById('documentModalBody').innerHTML = document.content;
-                document.getElementById('documentModal').classList.remove('hidden');
-            }
-        });
-    }
-
-    generateTrademarkDocument() {
-        return `
-            <div class="document-content">
-                <div style="text-align: center; margin-bottom: 2rem;">
-                    <h1 style="color: var(--primary-color);">TRADEMARK APPROVAL CERTIFICATE</h1>
-                    <p style="font-size: 1.2rem; color: var(--text-muted);">United States Patent and Trademark Office</p>
-                </div>
-                
-                <div style="background: var(--background); padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
-                    <p><strong>Registration Number:</strong> GB-2025-00001</p>
-                    <p><strong>Registration Date:</strong> January 1, 2025</p>
-                    <p><strong>Trademark Name:</strong> GLOBAL BANK</p>
-                    <p><strong>Owner:</strong> Olawale Abdul-Ganiyu Adeshina</p>
-                    <p><strong>Owner Address:</strong> International Banking Center, New York, NY 10001, USA</p>
-                    <p><strong>Owner Email:</strong> olawalztegan@gmail.com</p>
-                </div>
-
-                <div style="text-align: center; margin: 2rem 0;">
-                    <p style="font-size: 1.1rem;"><strong>CERTIFICATE OF REGISTRATION</strong></p>
-                    <p>This is to certify that the trademark "GLOBAL BANK" has been registered in the United States Patent and Trademark Office.</p>
-                </div>
-
-                <div style="text-align: center; margin-top: 3rem; border-top: 2px solid var(--primary-color); padding-top: 2rem;">
-                    <p><strong>Official Seal</strong></p>
-                    <div style="font-size: 3rem; margin: 1rem 0;">🔐</div>
-                    <p><strong>United States Patent and Trademark Office</strong></p>
-                    <p>Washington, D.C. 20231</p>
-                </div>
-            </div>
-        `;
-    }
-
-    generateFinancialLawDocument() {
-        return `
-            <div class="document-content">
-                <div style="text-align: center; margin-bottom: 2rem;">
-                    <h1 style="color: var(--primary-color);">FINANCIAL LAW PERMIT</h1>
-                    <p style="font-size: 1.2rem; color: var(--text-muted);">International Financial Regulatory Authority</p>
-                </div>
-                
-                <div style="background: var(--background); padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
-                    <p><strong>Permit Number:</strong> IFR-2025-GB-001</p>
-                    <p><strong>Issue Date:</strong> January 1, 2025</p>
-                    <p><strong>Institution Name:</strong> GLOBAL BANK</p>
-                    <p><strong>Institution Type:</strong> International Commercial Bank</p>
-                    <p><strong>Licensee:</strong> Olawale Abdul-Ganiyu Adeshina</p>
-                    <p><strong>Contact Email:</strong> olawalztegan@gmail.com</p>
-                </div>
-
-                <div style="margin: 2rem 0;">
-                    <h3>PERMIT DETAILS</h3>
-                    <p>This permit authorizes Global Bank to conduct international banking operations including:</p>
-                    <ul style="margin-left: 2rem; margin-top: 1rem;">
-                        <li>Acceptance of deposits</li>
-                        <li>Granting of loans and advances</li>
-                        <li>Foreign exchange operations</li>
-                        <li>Cryptocurrency services</li>
-                        <li>International wire transfers</li>
-                        <li>Investment banking services</li>
-                    </ul>
-                </div>
-
-                <div style="text-align: center; margin-top: 3rem; border-top: 2px solid var(--primary-color); padding-top: 2rem;">
-                    <p><strong>Official Seal</strong></p>
-                    <div style="font-size: 3rem; margin: 1rem 0;">🏛️</div>
-                    <p><strong>International Financial Regulatory Authority</strong></p>
-                    <p>Geneva, Switzerland</p>
-                </div>
-            </div>
-        `;
-    }
-
-    generateWorldBankDocument() {
-        return `
-            <div class="document-content">
-                <div style="text-align: center; margin-bottom: 2rem;">
-                    <h1 style="color: var(--primary-color);">WORLD BANK OPERATING PERMIT</h1>
-                    <p style="font-size: 1.2rem; color: var(--text-muted);">World Bank Group</p>
-                </div>
-                
-                <div style="background: var(--background); padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
-                    <p><strong>Permit Number:</strong> WB-2025-INT-001</p>
-                    <p><strong>Issue Date:</strong> January 1, 2025</p>
-                    <p><strong>Institution:</strong> GLOBAL BANK</p>
-                    <p><strong>Permit Holder:</strong> Olawale Abdul-Ganiyu Adeshina</p>
-                    <p><strong>Email:</strong> olawalztegan@gmail.com</p>
-                </div>
-
-                <div style="margin: 2rem 0;">
-                    <h3>AUTHORIZATION</h3>
-                    <p>This permit authorizes Global Bank to operate as an international banking institution with full World Bank recognition and support.</p>
-                </div>
-
-                <div style="text-align: center; margin-top: 3rem; border-top: 2px solid var(--primary-color); padding-top: 2rem;">
-                    <p><strong>Official Seal</strong></p>
-                    <div style="font-size: 3rem; margin: 1rem 0;">🌍</div>
-                    <p><strong>World Bank Group</strong></p>
-                    <p>Washington, D.C. 20433, USA</p>
-                </div>
-            </div>
-        `;
-    }
-
-    generateBankingLicenseDocument() {
-        return `
-            <div class="document-content">
-                <div style="text-align: center; margin-bottom: 2rem;">
-                    <h1 style="color: var(--primary-color);">FULL BANKING LICENSE</h1>
-                    <p style="font-size: 1.2rem; color: var(--text-muted);">International Banking Commission</p>
-                </div>
-                
-                <div style="background: var(--background); padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
-                    <p><strong>License Number:</strong> IBC-2025-FBL-001</p>
-                    <p><strong>Issue Date:</strong> January 1, 2025</p>
-                    <p><strong>License Holder:</strong> Olawale Abdul-Ganiyu Adeshina</p>
-                    <p><strong>Institution:</strong> GLOBAL BANK</p>
-                    <p><strong>Email:</strong> olawalztegan@gmail.com</p>
-                </div>
-
-                <div style="margin: 2rem 0;">
-                    <h3>LICENSE PRIVILEGES</h3>
-                    <p>This license grants Global Bank the following privileges:</p>
-                    <ul style="margin-left: 2rem; margin-top: 1rem;">
-                        <li>Full commercial banking operations</li>
-                        <li>International wire transfers</li>
-                        <li>Cryptocurrency trading and storage</li>
-                        <li>Investment banking services</li>
-                        <li>Asset management</li>
-                        <li>Foreign exchange services</li>
-                    </ul>
-                </div>
-
-                <div style="text-align: center; margin-top: 3rem; border-top: 2px solid var(--primary-color); padding-top: 2rem;">
-                    <p><strong>Official Seal</strong></p>
-                    <div style="font-size: 3rem; margin: 1rem 0;">🏦</div>
-                    <p><strong>International Banking Commission</strong></p>
-                    <p>London, United Kingdom</p>
-                </div>
-            </div>
-        `;
-    }
-
-    generateBusinessRegistrationDocument() {
-        return `
-            <div class="document-content">
-                <div style="text-align: center; margin-bottom: 2rem;">
-                    <h1 style="color: var(--primary-color);">BUSINESS REGISTRATION CERTIFICATE</h1>
-                    <p style="font-size: 1.2rem; color: var(--text-muted);">Department of Commerce</p>
-                </div>
-                
-                <div style="background: var(--background); padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
-                    <p><strong>Registration Number:</strong> BRC-2025-GB-001</p>
-                    <p><strong>Registration Date:</strong> January 1, 2025</p>
-                    <p><strong>Business Name:</strong> GLOBAL BANK</p>
-                    <p><strong>Business Type:</strong> International Banking Institution</p>
-                    <p><strong>Owner:</strong> Olawale Abdul-Ganiyu Adeshina</p>
-                    <p><strong>Email:</strong> olawalztegan@gmail.com</p>
-                </div>
-
-                <div style="margin: 2rem 0;">
-                    <h3>CERTIFICATE OF INCORPORATION</h3>
-                    <p>This certifies that GLOBAL BANK has been duly registered as a business entity under the laws of the United States of America.</p>
-                </div>
-
-                <div style="text-align: center; margin-top: 3rem; border-top: 2px solid var(--primary-color); padding-top: 2rem;">
-                    <p><strong>Official Seal</strong></p>
-                    <div style="font-size: 3rem; margin: 1rem 0;">📋</div>
-                    <p><strong>Department of Commerce</strong></p>
-                    <p>Washington, D.C. 20230</p>
-                </div>
-            </div>
-        `;
-    }
-
-    generateBusinessAgreementDocument() {
-        return `
-            <div class="document-content">
-                <div style="text-align: center; margin-bottom: 2rem;">
-                    <h1 style="color: var(--primary-color);">BUSINESS AGREEMENT</h1>
-                    <p style="font-size: 1.2rem; color: var(--text-muted);">Terms and Conditions</p>
-                </div>
-                
-                <div style="background: var(--background); padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
-                    <p><strong>Agreement Number:</strong> BA-2025-GB-001</p>
-                    <p><strong>Date:</strong> January 1, 2025</p>
-                    <p><strong>Party A:</strong> GLOBAL BANK</p>
-                    <p><strong>Party B (Owner):</strong> Olawale Abdul-Ganiyu Adeshina</p>
-                    <p><strong>Contact Email:</strong> olawalztegan@gmail.com</p>
-                </div>
-
-                <div style="margin: 2rem 0;">
-                    <h3>TERMS AND CONDITIONS</h3>
-                    <ol style="margin-left: 2rem; margin-top: 1rem;">
-                        <li>Global Bank shall operate as an international banking institution</li>
-                        <li>All banking operations shall comply with international financial regulations</li>
-                        <li>Customer funds shall be protected and insured</li>
-                        <li>All transactions shall be recorded and transparent</li>
-                        <li>Privacy and security of customer data shall be maintained</li>
-                        <li>Dispute resolution shall follow international banking standards</li>
-                    </ol>
-                </div>
-
-                <div style="text-align: center; margin-top: 3rem; border-top: 2px solid var(--primary-color); padding-top: 2rem;">
-                    <p><strong>Official Seal</strong></p>
-                    <div style="font-size: 3rem; margin: 1rem 0;">✍️</div>
-                    <p><strong>Global Bank Legal Department</strong></p>
-                    <p>New York, NY 10001, USA</p>
-                </div>
-            </div>
-        `;
-    }
-
-    // Admin Dashboard
-    async showAdminDashboard() {
-        this.showPage('adminDashboardPage');
-        
-        // Load admin statistics
-        await this.loadAdminStatistics();
-    }
-
-    async loadAdminStatistics() {
-        try {
-            const users = await this.database.getAllUsers();
-            const transactions = await this.database.getAllTransactions();
-            
-            let totalBankVolume = 0;
-            let totalCryptoVolume = 0;
-            
-            users.forEach(user => {
-                totalBankVolume += user.bankBalance || 0;
-                totalCryptoVolume += user.cryptoBalance || 0;
-            });
-            
-            document.getElementById('adminTotalUsers').textContent = users.length;
-            document.getElementById('adminTotalBankVolume').textContent = this.formatCurrency(totalBankVolume);
-            document.getElementById('adminTotalCryptoVolume').textContent = this.formatCrypto(totalCryptoVolume);
-            document.getElementById('adminTotalTransactions').textContent = transactions.length;
-            
-        } catch (error) {
-            console.error('Error loading admin statistics:', error);
-        }
-    }
-
-    // Transaction Methods
-    async addTransaction(type, amount, currency, description) {
-        const transaction = {
-            id: this.database.generateId(),
-            userId: this.currentUser.id,
-            type,
-            amount,
-            currency,
-            description,
-            status: 'completed',
+        // Deduct from sender
+        this.addTransaction('debit', amount, `Transfer to ${recipient.fullName} - ${description}`);
+        this.currentUser.balance -= amount;
+
+        // Add to recipient
+        const recipientTransaction = {
+            id: this.generateId(),
+            userId: recipient.id,
+            type: 'credit',
+            amount: amount,
+            description: `Transfer from ${this.currentUser.fullName} - ${description}`,
             createdAt: new Date().toISOString()
         };
         
-        await this.database.addTransaction(transaction);
+        const transactions = this.getTransactions();
+        transactions.push(recipientTransaction);
+        this.saveTransactions(transactions);
+
+        recipient.balance += amount;
+        this.updateUser(recipient);
+        this.updateUser(this.currentUser);
+
+        this.updateDashboardUI();
+        this.loadRecentTransactions();
+        this.closeModal();
+        this.showNotification(`$${this.formatCurrency(amount)} sent to ${recipient.fullName}`, 'success');
     }
 
-    // Modal Methods
+    showReceiveMoneyModal() {
+        const currentUser = this.currentUser;
+        const modalContent = `
+            <div class="receive-money-content">
+                <div class="form-group">
+                    <label>Your Account Number</label>
+                    <div class="account-number-display">
+                        <input type="text" value="${currentUser.accountNumber}" readonly>
+                        <button id="copyAccountNumber" class="btn btn-sm">Copy</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" value="${currentUser.fullName}" readonly>
+                </div>
+                <p class="text-center mt-2">Share this account number to receive money</p>
+            </div>
+        `;
+
+        this.showModal('Receive Money', modalContent);
+        document.getElementById('copyAccountNumber').addEventListener('click', () => {
+            navigator.clipboard.writeText(currentUser.accountNumber);
+            this.showNotification('Account number copied to clipboard', 'success');
+        });
+    }
+
+    showTransactionHistory() {
+        const transactions = this.getTransactions();
+        const userTransactions = transactions.filter(t => t.userId === this.currentUser.id);
+        const allTransactions = userTransactions.reverse();
+
+        let content = '';
+        
+        if (allTransactions.length === 0) {
+            content = '<p class="no-transactions">No transactions yet</p>';
+        } else {
+            content = '<div class="transactions-list">' +
+                allTransactions.map(transaction => `
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <span class="transaction-type">${this.getTransactionTypeText(transaction.type)}</span>
+                            <span class="transaction-date">${this.formatDate(transaction.createdAt)}</span>
+                            <small>${transaction.description}</small>
+                        </div>
+                        <span class="transaction-amount ${transaction.type}">
+                            ${transaction.type === 'credit' ? '+' : '-'}${this.formatCurrency(transaction.amount)}
+                        </span>
+                    </div>
+                `).join('') +
+                '</div>';
+        }
+
+        this.showModal('Transaction History', content);
+    }
+
+    // Admin Dashboard Methods
+    showAdminDashboard() {
+        this.showPage('adminDashboardPage');
+        this.updateAdminDashboardUI();
+        this.loadUsersTable();
+    }
+
+    updateAdminDashboardUI() {
+        document.getElementById('adminUserName').textContent = 'Admin: Olawale Abdul-Ganiyu';
+        
+        const users = this.getUsers();
+        const transactions = this.getTransactions();
+        const system = this.getSystemSettings();
+
+        document.getElementById('totalUsers').textContent = users.length;
+        document.getElementById('totalTransactions').textContent = transactions.length;
+        document.getElementById('totalVolume').textContent = this.formatCurrency(system.totalVolume);
+    }
+
+    loadUsersTable() {
+        const users = this.getUsers();
+        const tableBody = document.getElementById('usersTableBody');
+
+        if (users.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="5" class="text-center">No users registered</td></tr>';
+            return;
+        }
+
+        tableBody.innerHTML = users.map(user => `
+            <tr>
+                <td>${user.fullName}</td>
+                <td>${user.email}</td>
+                <td>${user.accountNumber}</td>
+                <td>${this.formatCurrency(user.balance)}</td>
+                <td>
+                    <button class="btn btn-sm" onclick="app.editUserFromAdmin('${user.id}')">Edit</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    showManageUsersModal() {
+        const users = this.getUsers();
+        let content = '<div class="users-list">';
+
+        if (users.length === 0) {
+            content += '<p class="no-transactions">No users registered</p>';
+        } else {
+            content += users.map(user => `
+                <div class="user-card">
+                    <h4>${user.fullName}</h4>
+                    <p><strong>Email:</strong> ${user.email}</p>
+                    <p><strong>Account:</strong> ${user.accountNumber}</p>
+                    <p><strong>Balance:</strong> ${this.formatCurrency(user.balance)}</p>
+                    <button class="btn btn-sm" onclick="app.editUserFromAdmin('${user.id}')">Edit User</button>
+                </div>
+            `).join('');
+        }
+
+        content += '</div>';
+        this.showModal('Manage Users', content);
+    }
+
+    showAllTransactionsModal() {
+        const transactions = this.getTransactions().reverse();
+        let content = '';
+
+        if (transactions.length === 0) {
+            content = '<p class="no-transactions">No transactions yet</p>';
+        } else {
+            content = '<div class="transactions-list">' +
+                transactions.map(transaction => {
+                    const user = this.getUserById(transaction.userId);
+                    const userName = user ? user.fullName : 'Unknown User';
+                    return `
+                        <div class="transaction-item">
+                            <div class="transaction-info">
+                                <span class="transaction-type">${userName}</span>
+                                <span class="transaction-date">${this.formatDate(transaction.createdAt)}</span>
+                                <small>${transaction.description}</small>
+                            </div>
+                            <span class="transaction-amount ${transaction.type}">
+                                ${transaction.type === 'credit' ? '+' : '-'}${this.formatCurrency(transaction.amount)}
+                            </span>
+                        </div>
+                    `;
+                }).join('') +
+                '</div>';
+        }
+
+        this.showModal('All Transactions', content);
+    }
+
+    showEditUserBalanceModal() {
+        const users = this.getUsers();
+        let userOptions = users.map(user => 
+            `<option value="${user.id}">${user.fullName} - ${user.accountNumber}</option>`
+        ).join('');
+
+        const modalContent = `
+            <form id="editUserBalanceForm">
+                <div class="form-group">
+                    <label for="selectUser">Select User</label>
+                    <select id="selectUser" required>
+                        <option value="">Choose a user...</option>
+                        ${userOptions}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="userNewBalance">New Balance ($)</label>
+                    <input type="number" id="userNewBalance" placeholder="Enter new balance" step="0.01" min="0" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Balance</button>
+            </form>
+        `;
+
+        this.showModal('Edit User Balance', modalContent);
+        document.getElementById('editUserBalanceForm').addEventListener('submit', (e) => this.handleEditUserBalance(e));
+    }
+
+    handleEditUserBalance(e) {
+        e.preventDefault();
+        const userId = document.getElementById('selectUser').value;
+        const newBalance = parseFloat(document.getElementById('userNewBalance').value);
+
+        if (!userId) {
+            this.showNotification('Please select a user', 'danger');
+            return;
+        }
+
+        const user = this.getUserById(userId);
+        if (!user) {
+            this.showNotification('User not found', 'danger');
+            return;
+        }
+
+        const difference = newBalance - user.balance;
+        
+        if (difference > 0) {
+            this.addTransaction(userId, 'credit', difference, 'Balance adjustment by admin');
+        } else if (difference < 0) {
+            this.addTransaction(userId, 'debit', Math.abs(difference), 'Balance adjustment by admin');
+        }
+
+        user.balance = newBalance;
+        this.updateUser(user);
+        
+        this.updateAdminDashboardUI();
+        this.loadUsersTable();
+        this.closeModal();
+        this.showNotification(`Balance updated for ${user.fullName}`, 'success');
+    }
+
+    showSystemSettingsModal() {
+        const system = this.getSystemSettings();
+        const modalContent = `
+            <div class="system-settings">
+                <div class="form-group">
+                    <label>Owner</label>
+                    <input type="text" value="${system.owner}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Google Account</label>
+                    <input type="text" value="${system.googleAccount}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>API Version</label>
+                    <input type="text" value="${system.apiVersion}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>API Base URL</label>
+                    <input type="text" value="${this.API_BASE_URL}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Total Volume</label>
+                    <input type="text" value="${this.formatCurrency(system.totalVolume)}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Created At</label>
+                    <input type="text" value="${this.formatDate(system.createdAt)}" readonly>
+                </div>
+            </div>
+        `;
+
+        this.showModal('System Settings', modalContent);
+    }
+
+    editUserFromAdmin(userId) {
+        const user = this.getUserById(userId);
+        if (!user) return;
+
+        const modalContent = `
+            <form id="editUserDetailsForm">
+                <div class="form-group">
+                    <label for="editUserName">Full Name</label>
+                    <input type="text" id="editUserName" value="${user.fullName}" required>
+                </div>
+                <div class="form-group">
+                    <label for="editUserEmail">Email</label>
+                    <input type="email" id="editUserEmail" value="${user.email}" required>
+                </div>
+                <div class="form-group">
+                    <label for="editUserPhone">Phone</label>
+                    <input type="tel" id="editUserPhone" value="${user.phone}" required>
+                </div>
+                <div class="form-group">
+                    <label for="editUserAccount">Account Number</label>
+                    <input type="text" id="editUserAccount" value="${user.accountNumber}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="editUserBalance">Balance ($)</label>
+                    <input type="number" id="editUserBalance" value="${user.balance}" step="0.01" min="0" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Update User</button>
+            </form>
+        `;
+
+        this.showModal('Edit User Details', modalContent);
+        document.getElementById('editUserDetailsForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            user.fullName = document.getElementById('editUserName').value;
+            user.email = document.getElementById('editUserEmail').value;
+            user.phone = document.getElementById('editUserPhone').value;
+            user.balance = parseFloat(document.getElementById('editUserBalance').value);
+            
+            this.updateUser(user);
+            this.updateAdminDashboardUI();
+            this.loadUsersTable();
+            this.closeModal();
+            this.showNotification('User updated successfully', 'success');
+        });
+    }
+
+    // Helper Methods
+    getUsers() {
+        return JSON.parse(localStorage.getItem('minipay_users') || '[]');
+    }
+
+    saveUsers(users) {
+        localStorage.setItem('minipay_users', JSON.stringify(users));
+    }
+
+    getTransactions() {
+        return JSON.parse(localStorage.getItem('minipay_transactions') || '[]');
+    }
+
+    saveTransactions(transactions) {
+        localStorage.setItem('minipay_transactions', JSON.stringify(transactions));
+    }
+
+    getSystemSettings() {
+        return JSON.parse(localStorage.getItem('minipay_system') || '{}');
+    }
+
+    saveSystemSettings(system) {
+        localStorage.setItem('minipay_system', JSON.stringify(system));
+    }
+
+    getUserById(userId) {
+        const users = this.getUsers();
+        return users.find(u => u.id === userId);
+    }
+
+    updateUser(user) {
+        const users = this.getUsers();
+        const index = users.findIndex(u => u.id === user.id);
+        if (index !== -1) {
+            users[index] = user;
+            this.saveUsers(users);
+        }
+    }
+
+    addTransaction(type, amount, description) {
+        const transaction = {
+            id: this.generateId(),
+            userId: this.currentUser.id,
+            type: type,
+            amount: amount,
+            description: description,
+            createdAt: new Date().toISOString()
+        };
+
+        const transactions = this.getTransactions();
+        transactions.push(transaction);
+        this.saveTransactions(transactions);
+
+        // Update system volume
+        const system = this.getSystemSettings();
+        system.totalVolume += amount;
+        this.saveSystemSettings(system);
+    }
+
     showModal(title, content) {
-        document.getElementById('generalModalTitle').textContent = title;
-        document.getElementById('generalModalBody').innerHTML = content;
-        document.getElementById('generalModal').classList.remove('hidden');
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalBody').innerHTML = content;
+        document.getElementById('modalOverlay').classList.remove('hidden');
     }
 
-    closeModal(modalId) {
-        document.getElementById(modalId).classList.add('hidden');
+    closeModal() {
+        document.getElementById('modalOverlay').classList.add('hidden');
     }
 
-    // Utility Methods
     showNotification(message, type = 'success') {
+        // Create notification element
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
         notification.textContent = message;
@@ -1521,7 +826,7 @@ class GlobalBank {
             top: 20px;
             right: 20px;
             padding: 1rem 2rem;
-            background: ${type === 'success' ? '#4caf50' : type === 'danger' ? '#f44336' : '#2196f3'};
+            background: ${type === 'success' ? '#10b981' : '#ef4444'};
             color: white;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -1537,20 +842,16 @@ class GlobalBank {
         }, 3000);
     }
 
+    generateId() {
+        return 'id_' + Math.random().toString(36).substr(2, 9) + Date.now();
+    }
+
+    generateAccountNumber() {
+        return 'MP' + Math.random().toString(10).substr(2, 8);
+    }
+
     formatCurrency(amount) {
         return parseFloat(amount).toFixed(2);
-    }
-
-    formatCrypto(amount) {
-        return parseFloat(amount).toFixed(8);
-    }
-
-    formatAmount(amount, currency) {
-        if (currency === 'USD' || currency === 'EUR' || currency === 'GBP') {
-            return this.formatCurrency(amount);
-        } else {
-            return this.formatCrypto(amount);
-        }
     }
 
     formatDate(dateString) {
@@ -1564,13 +865,6 @@ class GlobalBank {
         });
     }
 
-    formatTime(seconds) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const secs = seconds % 60;
-        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-
     getTransactionTypeText(type) {
         const types = {
             'credit': 'Credit',
@@ -1579,10 +873,33 @@ class GlobalBank {
         };
         return types[type] || type;
     }
+
+    // API Integration Methods (for future backend integration)
+    async apiCall(endpoint, method = 'GET', data = null) {
+        try {
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.currentUser?.token || ''}`
+                }
+            };
+
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+
+            const response = await fetch(`${this.API_BASE_URL}${endpoint}`, options);
+            return await response.json();
+        } catch (error) {
+            console.error('API Error:', error);
+            throw error;
+        }
+    }
 }
 
 // Initialize the application
-const app = new GlobalBank();
+const app = new MiniPayApp();
 
 // Add animation styles
 const style = document.createElement('style');
@@ -1607,6 +924,33 @@ style.textContent = `
             transform: translateX(400px);
             opacity: 0;
         }
+    }
+    
+    .account-number-display {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .account-number-display input {
+        flex: 1;
+    }
+    
+    .user-card {
+        background: #f9f9f9;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+    }
+    
+    .user-card h4 {
+        margin-bottom: 0.5rem;
+        color: #1a1a1a;
+    }
+    
+    .user-card p {
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+        color: #666;
     }
 `;
 document.head.appendChild(style);

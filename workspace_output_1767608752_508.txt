@@ -1,0 +1,20 @@
+    showPage(pageId) {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+    }
+
+    async checkExistingSession() {
+        const session = localStorage.getItem('globalbank_session');
+        if (session) {
+            try {
+                const sessionData = JSON.parse(session);
+                this.currentUser = sessionData.user;
+                this.isAdmin = sessionData.isAdmin;
+                
+                if (this.isAdmin) {
+                    await this.showAdminDashboard();
+                } else {
+                    await this.showCustomerDashboard();
+                }
+            } catch (error) {
+                console.error('Session error:', error);

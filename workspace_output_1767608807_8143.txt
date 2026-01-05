@@ -1,0 +1,100 @@
+// Global Bank - International Banking System Database
+// Developed by Olawale Abdul-Ganiyu Adeshina
+// Email: olawalztegan@gmail.com
+
+class GlobalBankDatabase {
+    constructor() {
+        this.dbName = 'GlobalBankDB';
+        this.version = 1;
+        this.db = null;
+        this.initializeDatabase();
+    }
+
+    async initializeDatabase() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(this.dbName, this.version);
+
+            request.onerror = (event) => {
+                console.error('Database error:', event.target.error);
+                reject(event.target.error);
+            };
+
+            request.onsuccess = (event) => {
+                this.db = event.target.result;
+                console.log('Database initialized successfully');
+                resolve(this.db);
+            };
+
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+
+                // Users Store
+                if (!db.objectStoreNames.contains('users')) {
+                    const userStore = db.createObjectStore('users', { keyPath: 'id' });
+                    userStore.createIndex('email', 'email', { unique: true });
+                    userStore.createIndex('accountNumber', 'accountNumber', { unique: true });
+                    userStore.createIndex('walletAddress', 'walletAddress', { unique: true });
+                    userStore.createIndex('swiftCode', 'swiftCode', { unique: true });
+                }
+
+                // Transactions Store
+                if (!db.objectStoreNames.contains('transactions')) {
+                    const transactionStore = db.createObjectStore('transactions', { keyPath: 'id' });
+                    transactionStore.createIndex('userId', 'userId', { unique: false });
+                    transactionStore.createIndex('type', 'type', { unique: false });
+                    transactionStore.createIndex('status', 'status', { unique: false });
+                    transactionStore.createIndex('createdAt', 'createdAt', { unique: false });
+                }
+
+                // Crypto Wallets Store
+                if (!db.objectStoreNames.contains('cryptoWallets')) {
+                    const cryptoStore = db.createObjectStore('cryptoWallets', { keyPath: 'address' });
+                    cryptoStore.createIndex('userId', 'userId', { unique: false });
+                    cryptoStore.createIndex('coinType', 'coinType', { unique: false });
+                    cryptoStore.createIndex('balance', 'balance', { unique: false });
+                }
+
+                // Bank Accounts Store
+                if (!db.objectStoreNames.contains('bankAccounts')) {
+                    const bankStore = db.createObjectStore('bankAccounts', { keyPath: 'accountNumber' });
+                    bankStore.createIndex('userId', 'userId', { unique: false });
+                    bankStore.createIndex('bankType', 'bankType', { unique: false });
+                    bankStore.createIndex('swiftCode', 'swiftCode', { unique: false });
+                }
+
+                // Payment Methods Store
+                if (!db.objectStoreNames.contains('paymentMethods')) {
+                    const paymentStore = db.createObjectStore('paymentMethods', { keyPath: 'id' });
+                    paymentStore.createIndex('userId', 'userId', { unique: false });
+                    paymentStore.createIndex('type', 'type', { unique: false });
+                    paymentStore.createIndex('isDefault', 'isDefault', { unique: false });
+                }
+
+                // KYC Documents Store
+                if (!db.objectStoreNames.contains('kycDocuments')) {
+                    const kycStore = db.createObjectStore('kycDocuments', { keyPath: 'userId' });
+                    kycStore.createIndex('status', 'status', { unique: false });
+                    kycStore.createIndex('submittedAt', 'submittedAt', { unique: false });
+                }
+
+                // Exchange Rates Store
+                if (!db.objectStoreNames.contains('exchangeRates')) {
+                    const exchangeStore = db.createObjectStore('exchangeRates', { keyPath: 'pair' });
+                    exchangeStore.createIndex('from', 'from', { unique: false });
+                    exchangeStore.createIndex('to', 'to', { unique: false });
+                    exchangeStore.createIndex('updatedAt', 'updatedAt', { unique: false });
+                }
+
+                // Mining Operations Store
+                if (!db.objectStoreNames.contains('miningOperations')) {
+                    const miningStore = db.createObjectStore('miningOperations', { keyPath: 'id' });
+                    miningStore.createIndex('userId', 'userId', { unique: false });
+                    miningStore.createIndex('status', 'status', { unique: false });
+                    miningStore.createIndex('createdAt', 'createdAt', { unique: false });
+                }
+
+                // Wallet Folders Store
+                if (!db.objectStoreNames.contains('walletFolders')) {
+                    const folderStore = db.createObjectStore('walletFolders', { keyPath: 'folderPath' });
+                    folderStore.createIndex('userId', 'userId', { unique: false });
+                    folderStore.createIndex('type', 'type', { unique: false });

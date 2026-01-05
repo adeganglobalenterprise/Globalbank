@@ -1,0 +1,30 @@
+    <!-- Document Viewer Modal -->
+    <div id="documentModal" class="modal-overlay hidden">
+        <div class="modal-content document-modal">
+            <div class="modal-header">
+                <h3 id="documentModalTitle">Document</h3>
+                <button class="close-modal" id="closeDocumentModal">&times;</button>
+            </div>
+            <div class="modal-body" id="documentModalBody">
+                <!-- Document content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- General Modal -->
+    <div id="generalModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="generalModalTitle">Modal</h3>
+                <button class="close-modal" id="closeGeneralModal">&times;</button>
+            </div>
+            <div class="modal-body" id="generalModalBody">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <script src="database.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

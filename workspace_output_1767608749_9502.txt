@@ -1,0 +1,10 @@
+68:            this.showPage('registerPage');
+73:            this.showPage('loginPage');
+78:            this.showPage('adminLoginPage');
+83:            this.showPage('loginPage');
+166:    showPage(pageId) {
+189:            this.showPage('loginPage');
+270:            this.showPage('loginPage');
+303:        this.showPage('loginPage');
+317:        this.showPage('customerDashboardPage');
+1458:        this.showPage('adminDashboardPage');

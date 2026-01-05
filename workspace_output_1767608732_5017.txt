@@ -1,0 +1,31 @@
+    async init() {
+        console.log(`${this.CONFIG.APP_NAME} initializing...`);
+        
+        try {
+            // Initialize database
+            this.database = await new GlobalBankDatabase();
+            console.log('Database initialized successfully');
+            
+            // Attach event listeners
+            this.attachEventListeners();
+            
+            // Initialize exchange rates
+            await this.initializeExchangeRates();
+            
+            // Check for existing session
+            await this.checkExistingSession();
+            
+            // Initialize banking documents
+            await this.initializeBankingDocuments();
+            
+            console.log(`${this.CONFIG.APP_NAME} initialized successfully`);
+            
+        } catch (error) {
+            console.error('Initialization error:', error);
+            this.showNotification('Error initializing application. Please refresh.', 'danger');
+        }
+    }
+
+    attachEventListeners() {
+        // Page Navigation
+        document.getElementById('showRegister').addEventListener('click', (e) => {
